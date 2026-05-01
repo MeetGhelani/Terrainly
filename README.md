@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Terrainly — Premium Cartographic Poster Studio
 
-## Getting Started
+Terrainly is a professional-grade creative suite designed for generating high-fidelity map art, cinematic posters, and high-resolution wallpapers from any location on Earth. Combining advanced 3D terrain data with a minimalist design aesthetic, it allows users to transform geographical data into stunning physical or digital art.
 
-First, run the development server:
+![Terrainly Homepage Preview](/public/homepage.png)
+
+## 🚀 Key Features
+
+*   **Global 3D Terrain Engine**: Real-time 3D elevation rendering allowing you to tilt, rotate, and explore mountains and valleys in high detail.
+*   **Artistic Typography System**: A curated collection of premium fonts (Playfair, Lora, Outfit, etc.) designed for editorial-grade poster layouts.
+*   **Dynamic Layer Management**: Granular control over map elements including landcover, buildings, water, and road visibility.
+*   **Precision Coordinate Grids**: Customizable technical overlays with adjustable spacing, thickness, and color.
+*   **High-Resolution Export**: Export your compositions as pixel-perfect PNGs optimized for print or social media (Instagram, A3, 24x36, etc.).
+*   **1:1 Visual Fidelity**: What you see in the editor is exactly what you get in the final export, thanks to our synchronized rendering pipeline.
+
+## 🛠 How to Use
+
+1.  **Find Your Muse**: Use the global search bar to navigate to any city, mountain range, or landmark.
+2.  **Shape the View**: Use right-click and drag to tilt the map into 3D mode. Adjust the "Map Details" slider to control the coverage radius.
+3.  **Customize Style**:
+    *   **Theme**: Choose from curated color palettes (Midnight, Blueprint, Satellite, etc.).
+    *   **Typography**: Edit the city name, country, and coordinates to match your design.
+    *   **Layers**: Toggle the coordinate grid, compass rose, and map features to refine the composition.
+4.  **Export & Print**: Open the Export panel, choose your target size (Portrait, Landscape, or Social), and download your high-resolution artwork.
+
+## 💻 Tech Stack
+
+*   **Frontend**: Next.js 15, React, TypeScript
+*   **Styling**: Tailwind CSS
+*   **Map Engine**: MapLibre GL JS + Custom 3D Terrain Layer
+*   **State Management**: Zustand with Zundo (Undo/Redo support)
+*   **Icons**: Lucide React
+*   **Geocoding**: OpenStreetMap (Nominatim)
+
+## 🏁 Getting Started
+
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to start creating.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Terrainly** — *Your terrain. Your art.*

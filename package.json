@@ -1,5 +1,5 @@
 {
-  "name": "temp-app",
+  "name": "terrainly",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,19 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@tmcw/togeojson": "^7.1.2",
+    "clsx": "^2.1.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.14.0",
+    "lz-string": "^1.5.0",
+    "maplibre-gl": "^5.24.0",
     "next": "16.2.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hotkeys-hook": "^5.2.4",
+    "tailwind-merge": "^3.5.0",
+    "zundo": "^2.3.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

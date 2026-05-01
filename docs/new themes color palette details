@@ -1,0 +1,390 @@
+# Map Art Themes Reference
+
+This document provides a comprehensive list of all color palettes used for map art generation, formatted for easy reading.
+
+---
+
+## 1. Midnight Blue (Luxury)
+**Base Palette**
+- **Land**: `#0A1628`
+- **Water**: `#061020`
+- **Parks**: `#0F2235`
+- **Buildings**: `#6E5A45`
+
+**Infrastructure**
+- **Major Roads**: `#C99C37`
+- **Minor (High)**: `#8A6820`
+- **Minor (Mid)**: `#333530`
+- **Minor (Low)**: `#272C2E`
+
+**Details**
+- **Path**: `#414033`
+- **Outline**: `#4F4B36`
+
+---
+
+## 2. Noir (Minimalist)
+**Base Palette**
+- **Land**: `#000000`
+- **Water**: `#0B0B0B`
+- **Parks**: `#171717`
+- **Buildings**: `#6F6F6F`
+
+**Infrastructure**
+- **Major Roads**: `#E8E8E8`
+- **Minor (High)**: `#A0A0A0`
+- **Minor (Mid)**: `#333333`
+- **Minor (Low)**: `#242424`
+
+**Details**
+- **Path**: `#454545`
+- **Outline**: `#575757`
+
+---
+
+## 3. Neon (Cyberpunk)
+**Base Palette**
+- **Land**: `#0B0F1A`
+- **Water**: `#001433`
+- **Parks**: `#1A0B2A`
+- **Buildings**: `#FF2D95`
+
+**Infrastructure**
+- **Major Roads**: `#FF2D95`
+- **Minor (High)**: `#FF6EB4`
+- **Minor (Mid)**: `#8A33FF`
+- **Minor (Low)**: `#4A0099`
+
+**Details**
+- **Path**: `#21203A`
+- **Outline**: `#0B0F1A`
+
+---
+
+## 4. Japanese Ink (Artistic)
+**Base Palette**
+- **Land**: `#FAF8F5`
+- **Water**: `#E8E4E0`
+- **Parks**: `#F0EDE8`
+- **Buildings**: `#959595`
+
+**Infrastructure**
+- **Major Roads**: `#8B2500`
+- **Minor (High)**: `#505050`
+- **Minor (Mid)**: `#A8A8A8`
+- **Minor (Low)**: `#BCBAB6`
+
+**Details**
+- **Path**: `#D0CECA`
+- **Outline**: `#DDDBD8`
+
+---
+
+## 5. Blueprint (Technical)
+**Base Palette**
+- **Land**: `#1A3A5C`
+- **Water**: `#0E2740`
+- **Parks**: `#1F466F`
+- **Buildings**: `#6EA4CC`
+
+**Infrastructure**
+- **Major Roads**: `#D8EEFA`
+- **Minor (High)**: `#7AAED0`
+- **Minor (Mid)**: `#435F7D`
+- **Minor (Low)**: `#375473`
+
+**Details**
+- **Path**: `#526C88`
+- **Outline**: `#607993`
+
+---
+
+## 6. Old Navy (Premium)
+**Base Palette**
+- **Land**: `#061327`
+- **Water**: `#0B1E3B`
+- **Parks**: `#0F2240`
+- **Buildings**: `#2A3F5C`
+
+**Infrastructure**
+- **Major Roads**: `#D4A030`
+- **Minor (High)**: `#8A6020`
+- **Minor (Mid)**: `#323432`
+- **Minor (Low)**: `#252A2E`
+
+**Details**
+- **Path**: `#414035`
+- **Outline**: `#514B39`
+
+---
+
+## 7. Coral (Lifestyle)
+**Base Palette**
+- **Land**: `#F3E1DA`
+- **Water**: `#DFC0B5`
+- **Parks**: `#EACFC6`
+- **Buildings**: `#E39B89`
+
+**Infrastructure**
+- **Major Roads**: `#B9473A`
+- **Minor (High)**: `#C86050`
+- **Minor (Mid)**: `#E09888`
+- **Minor (Low)**: `#DDAA9A`
+
+**Details**
+- **Path**: `#E8C4B8`
+- **Outline**: `#EDD2C8`
+
+---
+
+## 8. Terracotta (Warm)
+**Base Palette**
+- **Land**: `#F5EDE4`
+- **Water**: `#A8C4C4`
+- **Parks**: `#E8E0D0`
+- **Buildings**: `#D9A08A`
+
+**Infrastructure**
+- **Major Roads**: `#A0522D`
+- **Minor (High)**: `#C07048`
+- **Minor (Mid)**: `#DCA882`
+- **Minor (Low)**: `#D8B898`
+
+**Details**
+- **Path**: `#E4C8B0`
+- **Outline**: `#EAD4C0`
+
+---
+
+## 9. Sage (Nature)
+**Base Palette**
+- **Land**: `#DDE8DD`
+- **Water**: `#C5D4CB`
+- **Parks**: `#D3DFD7`
+- **Buildings**: `#8BAD9B`
+
+**Infrastructure**
+- **Major Roads**: `#3F624F`
+- **Minor (High)**: `#587A68`
+- **Minor (Mid)**: `#92B4A2`
+- **Minor (Low)**: `#AABFB4`
+
+**Details**
+- **Path**: `#BECCBF`
+- **Outline**: `#C8D8CC`
+
+---
+
+## 10. Ocean (Coastal)
+**Base Palette**
+- **Land**: `#F0F8FA`
+- **Water**: `#B8D8E8`
+- **Parks**: `#D8EAE8`
+- **Buildings**: `#67AED0`
+
+**Infrastructure**
+- **Major Roads**: `#14536A`
+- **Minor (High)**: `#2878A0`
+- **Minor (Mid)**: `#7ABCD4`
+- **Minor (Low)**: `#AACCE0`
+
+**Details**
+- **Path**: `#BCD8E8`
+- **Outline**: `#CCE4F0`
+
+---
+
+## 11. Sunset (Dreamy)
+**Base Palette**
+- **Land**: `#FDF5F0`
+- **Water**: `#EDD0C4`
+- **Parks**: `#F8E8E2`
+- **Buildings**: `#EAA898`
+
+**Infrastructure**
+- **Major Roads**: `#B84830`
+- **Minor (High)**: `#D87058`
+- **Minor (Mid)**: `#ECA898`
+- **Minor (Low)**: `#EEB8A8`
+
+**Details**
+- **Path**: `#F0C8B8`
+- **Outline**: `#F5D4C4`
+
+---
+
+## 12. Emerald City (Deep)
+**Base Palette**
+- **Land**: `#062C22`
+- **Water**: `#0D4536`
+- **Parks**: `#0F523E`
+- **Buildings**: `#1A785B`
+
+**Infrastructure**
+- **Major Roads**: `#4ADEB0`
+- **Minor (High)**: `#18A070`
+- **Minor (Mid)**: `#32554B`
+- **Minor (Low)**: `#25493F`
+
+**Details**
+- **Path**: `#42635A`
+- **Outline**: `#517268`
+
+13. Warm Beige (Premium)
+**Base Palette**
+- **Land**: `#F5F0E8`
+- **Water**: `#D8D0C0`
+- **Parks**: `#EAE6DC`
+- **Buildings**: `#BFB09E`
+
+**Infrastructure**
+- **Major Roads**: `#6B4828`
+- **Minor (High)**: `#9A7050`
+- **Minor (Mid)**: `#C09878`
+- **Minor (Low)**: `#C8A888`
+
+**Details**
+- **Path**: `#D4B898`
+- **Outline**: `#DCC4A8`
+
+14. Autumn (Premium)
+**Base Palette**
+- **Land**: `#FBF7F0`
+- **Water**: `#D4C8B4`
+- **Parks**: `#EDE6D8`
+- **Buildings**: `#C8943C`
+
+**Infrastructure**
+- **Major Roads**: `#8B2500`
+- **Minor (High)**: `#B85820`
+- **Minor (Mid)**: `#D99050`
+- **Minor (Low)**: `#DEBA80`
+
+**Details**
+- **Path**: `#E8CC98`
+- **Outline**: `#ECD8AA`
+
+15. Monochrome Blue (Premium)
+**Base Palette**
+- **Land**: `#F5F8FA`
+- **Water**: `#C8DCF0`
+- **Parks**: `#DDE8F2`
+- **Buildings**: `#8EB0CC`
+
+**Infrastructure**
+- **Major Roads**: `#1A3D6C`
+- **Minor (High)**: `#3A6890`
+- **Minor (Mid)**: `#8AB8D4`
+- **Minor (Low)**: `#A8C8E0`
+
+**Details**
+- **Path**: `#C0D8EC`
+- **Outline**: `#CCE2F0`
+
+16. Gradient Roads (Premium)
+**Base Palette**
+- **Land**: `#FFFFFF`
+- **Water**: `#D0D0D0`
+- **Parks**: `#F0F0F0`
+- **Buildings**: `#505050`
+
+**Infrastructure**
+- **Major Roads**: `#111111`
+- **Minor (High)**: `#444444`
+- **Minor (Mid)**: `#909090`
+- **Minor (Low)**: `#B4B4B4`
+
+**Details**
+- **Path**: `#C8C8C8`
+- **Outline**: `#D8D8D8`
+
+
+
+# Poster & Overlay Theme Details
+
+This provides the specific colors used for the poster text and background overlays (fades) for each theme in the project.
+
+---
+
+## 1. Midnight Blue
+- **Poster Text Color**: `#D6B352` (Gold)
+- **Overlay (Fade) Color**: `#0A1628` (Deep Navy)
+
+## 2. Noir
+- **Poster Text Color**: `#FFFFFF` (White)
+- **Overlay (Fade) Color**: `#000000` (Black)
+
+## 3. Neon
+- **Poster Text Color**: `#00F5FF` (Cyan)
+- **Overlay (Fade) Color**: `#0B0F1A` (Midnight)
+
+## 4. Japanese Ink
+- **Poster Text Color**: `#2C2C2C` (Ink Gray)
+- **Overlay (Fade) Color**: `#FAF8F5` (Paper White)
+
+## 5. Blueprint
+- **Poster Text Color**: `#E8F4FF` (Ice Blue)
+- **Overlay (Fade) Color**: `#1A3A5C` (Dark Blue)
+
+## 6. Old Navy
+- **Poster Text Color**: `#E2B85C` (Gold)
+- **Overlay (Fade) Color**: `#061327` (Deep Navy)
+
+## 7. Coral
+- **Poster Text Color**: `#6E2F28` (Deep Red)
+- **Overlay (Fade) Color**: `#F3E1DA` (Soft Ivory)
+
+## 8. Terracotta
+- **Poster Text Color**: `#8B4513` (Saddle Brown)
+- **Overlay (Fade) Color**: `#F5EDE4` (Cream)
+
+## 9. Sage
+- **Poster Text Color**: `#2D4739` (Dark Green)
+- **Overlay (Fade) Color**: `#DDE8DD` (Muted Green)
+
+## 10. Heatwave
+- **Poster Text Color**: `#FFD78A` (Peach)
+- **Overlay (Fade) Color**: `#1C0E09` (Burnt Umber)
+
+## 11. Ruby
+- **Poster Text Color**: `#F6D7BC` (Pale Rose)
+- **Overlay (Fade) Color**: `#1A070F` (Deep Plum)
+
+## 12. Ocean
+- **Poster Text Color**: `#1A5F7A` (Deep Teal)
+- **Overlay (Fade) Color**: `#F0F8FA` (Sky White)
+
+## 13. Emerald City
+- **Poster Text Color**: `#E3F9F1` (Mint)
+- **Overlay (Fade) Color**: `#062C22` (Deep Forest)
+
+## 14. Forest
+- **Poster Text Color**: `#2D4A3E` (Evergreen)
+- **Overlay (Fade) Color**: `#F0F4F0` (Sage Mist)
+
+## 15. Sunset
+- **Poster Text Color**: `#C45C3E` (Burnt Orange)
+- **Overlay (Fade) Color**: `#FDF5F0` (Peach)
+
+## 16. Autumn
+- **Poster Text Color**: `#8B4513` (Saddle Brown)
+- **Overlay (Fade) Color**: `#FBF7F0` (Warm Cream)
+
+## 17. Monochrome Blue
+- **Poster Text Color**: `#1A3A5C` (Navy)
+- **Overlay (Fade) Color**: `#F5F8FA` (Ice White)
+
+## 18. Copper
+- **Poster Text Color**: `#4E2F22` (Deep Copper)
+- **Overlay (Fade) Color**: `#E1D2C6` (Light Copper)
+
+## 19. Rustic
+- **Poster Text Color**: `#44362C` (Dark Wood)
+- **Overlay (Fade) Color**: `#DFD5C8` (Parchment)
+
+## 20. Pastel Dream
+- **Poster Text Color**: `#5D5A6D` (Mauve)
+- **Overlay (Fade) Color**: `#FAF7F2` (Cream)
+
+---
+
