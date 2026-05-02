@@ -5,6 +5,8 @@ import { MapFrame } from "@/components/editor/MapFrame";
 import { OnboardingOverlay } from "@/components/editor/OnboardingOverlay";
 
 import { ExportModal } from "@/components/editor/ExportModal";
+import { MobileNav } from "@/components/editor/MobileNav";
+import { MobilePanel } from "@/components/editor/MobilePanel";
 
 export default function Home() {
   return (
@@ -20,6 +22,8 @@ export default function Home() {
       </main>
       <ExportModal />
       <OnboardingOverlay />
+      <MobilePanel />
+      <MobileNav />
     </div>
   );
 }

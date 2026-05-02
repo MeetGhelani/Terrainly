@@ -150,9 +150,6 @@ export const TopBar = () => {
   return (
     <header className="h-14 border-b border-border-subtle bg-bg-panel flex items-center justify-between px-4 z-50">
       <div className="flex items-center gap-3">
-        <div className="md:hidden">
-          <Menu className="w-5 h-5 text-text-secondary" />
-        </div>
         <div className="flex items-center gap-2">
           <img src="/logos/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
           <h1 className="font-space text-xl font-bold tracking-tight bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent">
@@ -180,7 +177,7 @@ export const TopBar = () => {
         </div>
       </div>
 
-      <div className="flex-1 max-w-2xl mx-6 hidden md:flex items-center gap-2" ref={searchRef}>
+      <div className="flex-1 max-w-2xl mx-6 hidden sm:flex items-center gap-2" ref={searchRef}>
         <div className="flex items-center gap-3 px-3 py-1.5  mr-2 shrink-0 h-10">
           <MapPin className="w-4 h-4 text-accent" />
           <span className="text-[10px] font-black uppercase tracking-widest text-accent leading-none">Location</span>
@@ -245,20 +242,13 @@ export const TopBar = () => {
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 ml-2">
+        <div className="flex items-center gap-1.5 ml-2 hidden sm:flex">
           <button 
             onClick={handleLocate}
             className="w-10 h-10 flex items-center justify-center bg-bg-panel border border-border-subtle rounded-xl hover:border-accent/50 hover:bg-accent/5 transition-all group"
             title="Locate Me"
           >
             <Crosshair className="w-4 h-4 text-text-secondary group-hover:text-accent" />
-          </button>
-          <button 
-            onClick={() => setIsHelpOpen(true)}
-            className="w-10 h-10 flex items-center justify-center bg-bg-panel border border-border-subtle rounded-xl hover:border-accent/50 hover:bg-accent/5 transition-all group"
-            title="How to Use"
-          >
-            <HelpCircle className="w-4 h-4 text-text-secondary group-hover:text-accent" />
           </button>
         </div>
       </div>
@@ -268,7 +258,7 @@ export const TopBar = () => {
           href="https://github.com/MeetGhelani/Terrainly"
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 rounded-xl border border-border-subtle hover:border-accent/50 hover:bg-accent/5 text-text-secondary hover:text-accent transition-all group"
+          className="p-2 rounded-xl border border-border-subtle hover:border-accent/50 hover:bg-accent/5 text-text-secondary hover:text-accent transition-all group hidden sm:flex"
           title="GitHub Repository"
         >
           <svg 
@@ -280,11 +270,18 @@ export const TopBar = () => {
           </svg>
         </a>
         <button 
+          onClick={() => setIsHelpOpen(true)}
+          className="p-2.5 rounded-xl border border-border-subtle hover:border-accent/50 hover:bg-accent/5 text-text-secondary hover:text-accent transition-all group"
+          title="How to Use"
+        >
+          <HelpCircle className="w-5 h-5 transition-transform group-hover:scale-110" />
+        </button>
+        <button 
           onClick={() => setExportModalOpen(true)}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-accent hover:bg-accent-hover text-white transition-all text-sm font-bold shadow-lg shadow-accent/20 hover:shadow-accent/40 active:scale-95"
         >
           <Download className="w-4 h-4" />
-          <span>Export</span>
+          <span className="inline">Export</span>
         </button>
       </div>
 

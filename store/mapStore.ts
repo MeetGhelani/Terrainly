@@ -8,6 +8,8 @@ interface MapState {
   config: MapConfig;
   isOnboarded: boolean;
   isExportModalOpen: boolean;
+  activeTab: string | null;
+  setActiveTab: (tab: string | null) => void;
   setConfig: (config: Partial<MapConfig>) => void;
   setOnboarded: (value: boolean) => void;
   setExportModalOpen: (value: boolean) => void;
@@ -37,6 +39,8 @@ export const useMapStore = create<MapState>()(
       config: getInitialState(),
       isOnboarded: getInitialOnboarded(),
       isExportModalOpen: false,
+      activeTab: "basemap",
+      setActiveTab: (tab) => set({ activeTab: tab }),
       setConfig: (patch) =>
         set((state) => ({
           config: { ...state.config, ...patch },

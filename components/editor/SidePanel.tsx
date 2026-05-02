@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useMapStore } from "@/store/mapStore";
 import { 
   Map as MapIcon, 
   Palette, 
@@ -41,7 +42,7 @@ const TABS = [
 ];
 
 export const SidePanel = () => {
-  const [activeTab, setActiveTab] = useState<string | null>("basemap");
+  const { activeTab, setActiveTab } = useMapStore();
 
   useHotkeys("esc", () => setActiveTab(null), {
     enabled: activeTab !== null,

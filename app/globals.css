@@ -37,6 +37,14 @@
 
   --background: var(--bg-base);
   --foreground: var(--text-primary);
+
+  --sidebar-offset: 32px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --sidebar-offset: 448px;
+  }
 }
 
 * {
@@ -85,4 +93,26 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-scrollbar-h::-webkit-scrollbar {
+  height: 2px;
+}
+
+.custom-scrollbar-h::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar-h::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
 }

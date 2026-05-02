@@ -11,7 +11,6 @@ import { Overlay } from "@/types/map";
 import { CompassRose } from "@/components/editor/CompassRose";
 import { GridOverlay } from "@/components/editor/GridOverlay";
 import { AuraBackground } from "@/components/editor/AuraBackground";
-import { InfoBox } from "@/components/editor/InfoBox";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { hexToRGBA } from "@/lib/themes";
@@ -173,7 +172,6 @@ export const MapCanvas = () => {
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-bg-base flex items-center justify-center transition-all duration-500">
-      <InfoBox />
 
       {/* The Master Artwork Container (Everything inside here is exported) */}
       <div 

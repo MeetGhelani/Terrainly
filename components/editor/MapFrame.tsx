@@ -4,6 +4,7 @@ import React from "react";
 import { useMapStore } from "@/store/mapStore";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { InfoBox } from "./InfoBox";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -85,11 +86,11 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
   }[config.frame.style] ?? "";
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-[#05080f]">
-
+    <div className="relative w-full h-full overflow-hidden">
       {/* ── Blurred ambient background ── */}
       {/* This mirrors the map poster at very low quality / heavily blurred
-          to create the "out of canvas" backdrop effect */}
+          to create the "out of canvas" backdrop effect.
+          MOVED TO ROOT to cover the entire screen including InfoBox. */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
         aria-hidden
@@ -117,12 +118,19 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
           className="absolute inset-0 opacity-5"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(79,142,247,0.6) 1px, transparent 1px)," +
-              "linear-gradient(90deg, rgba(79,142,247,0.6) 1px, transparent 1px)",
+              "linear-gradient(rgba(79,142,247,0.4) 1px, transparent 5px)," +
+              "linear-gradient(90deg, rgba(79,142,247,0.4) 1px, transparent 5px)",
             backgroundSize: "40px 40px",
           }}
         />
       </div>
+
+      {/* ── Content Layout ── */}
+      <div className="relative z-10 w-full h-full flex flex-col items-center justify-start overflow-hidden">
+        <InfoBox variant="compact" />
+        <InfoBox variant="fixed" />
+
+        <div className="flex-1 w-full flex items-center justify-center relative overflow-hidden md:mt-0 -mt-25">
 
       {/* ── Poster frame ── */}
       <div
@@ -132,10 +140,11 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
         )}
         style={{
           aspectRatio: ratio,
-          // Robust mathematical fit: constrain width and height strictly to viewport bounding box
-          // while preserving the precise aspect ratio, preventing 0x0 collapse.
-          width: `min(calc(100vw - 448px), calc((100vh - 104px) * ${ratio}))`,
-          height: `min(calc(100vh - 104px), calc((100vw - 448px) / ${ratio}))`,
+          // Responsive constraints: 
+          // On desktop (md), subtract 448px for the sidebar. 
+          // On mobile, subtract only 32px for minimal padding.
+          width: `min(calc(100vw - (var(--sidebar-offset, 448px))), calc((100vh - 180px) * ${ratio}))`,
+          height: `min(calc(100vh - 180px), calc((100vw - (var(--sidebar-offset, 448px))) / ${ratio}))`,
         }}
       >
         {/* Map fills the poster */}
@@ -153,9 +162,14 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       {/* ── Format badge ── */}
-      <div className="absolute bottom-4 right-4 z-20 px-3 py-1.5 bg-bg-panel/70 backdrop-blur-md border border-border-subtle rounded-lg text-[9px] font-mono text-text-secondary tracking-widest uppercase select-none">
+      <div className="absolute bottom-4 right-4 z-20 px-3 py-1.5 bg-bg-panel/70 backdrop-blur-md border border-border-subtle rounded-lg text-[9px] font-mono text-text-secondary tracking-widest uppercase select-none hidden md:block">
         {getFrameLabel(config.poster)}
       </div>
+      
+      {/* Mobile Spacer to account for BottomNav height and ensure perfect centering */}
+      <div className="h-20 md:hidden shrink-0" />
+      </div>
     </div>
-  );
+  </div>
+);
 };
