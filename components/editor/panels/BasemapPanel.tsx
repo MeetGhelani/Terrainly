@@ -134,7 +134,15 @@ export const BasemapPanel = () => {
           ...config.cartography.grid,
           color: theme.colors.text
         }
-      }
+      },
+      overlays: config.overlays.map(overlay => ({
+        ...overlay,
+        color: theme.colors.roads_major
+      })),
+      routes: config.routes.map(route => ({
+        ...route,
+        color: theme.colors.rail || theme.colors.roads_major
+      }))
     });
   };
 
@@ -148,13 +156,30 @@ export const BasemapPanel = () => {
         const map: Record<string, keyof ThemeColors> = { land:"land", water:"water", roads:"roads_major", buildings:"buildings", parks:"parks" };
         const k = map[layer.id]; return k ? { ...layer, color: newColors[k] } : layer;
       }),
+      overlays: config.overlays.map(overlay => {
+        // If we are updating the primary accent color, update markers too
+        if (key === "roads_major") {
+          return { ...overlay, color: hex };
+        }
+        return overlay;
+      }),
+      routes: config.routes.map(route => {
+        // Rail often used for tracks/routes
+        if (key === "rail") {
+          return { ...route, color: hex };
+        }
+        return route;
+      }),
     });
   };
 
   // Open grid editor
   const openEditor = (themeId: string) => {
     setEditingThemeId(themeId);
-    applyTheme(themeId);
+    // Only apply if it's not the active theme to avoid resetting custom edits
+    if (config.activeThemeId !== themeId) {
+      applyTheme(themeId);
+    }
     setView("grid");
   };
 
@@ -282,9 +307,11 @@ export const BasemapPanel = () => {
     );
   }
 
+  const isCustomized = JSON.stringify(config.themeColors) !== JSON.stringify(activeTheme.colors);
+
   // ── View: Palette list (default) ─────────────────────────────────────────
   const ThemeCard = ({ theme }: { theme: typeof THEMES[number] }) => {
-    const isActive = config.activeThemeId === theme.id;
+    const isActive = config.activeThemeId === theme.id && !isCustomized;
     return (
       <div className={cn("group relative rounded-2xl border overflow-hidden cursor-pointer transition-all",
         isActive ? "border-accent ring-1 ring-accent shadow-lg shadow-accent/10" : "border-border-subtle hover:border-text-muted")}
@@ -310,18 +337,61 @@ export const BasemapPanel = () => {
       </div>
     );
   };
+  
+  // Custom swatches from current themeColors
+  const customSwatches = [
+    config.themeColors.land,
+    config.themeColors.roads_major,
+    config.themeColors.water,
+    config.themeColors.buildings,
+    config.themeColors.parks,
+  ];
 
   return (
     <div className="space-y-7 animate-in fade-in duration-300">
-      {/* Active theme summary */}
-      <div className="p-4 bg-bg-surface/50 border border-border-subtle rounded-2xl space-y-2">
-        <div className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.2em]">Active Theme</div>
-        <div className="text-sm font-bold text-text-primary">{activeTheme.name}</div>
-        <p className="text-[10px] text-text-secondary leading-relaxed">{activeTheme.description}</p>
-        <div className="flex gap-1.5 mt-2">
-          {activeTheme.swatchColors.map((c,i) => <div key={i} className="h-3 flex-1 rounded-sm" style={{ background:c }}/>)}
+      {/* Active theme summary / Custom Theme card */}
+      {isCustomized ? (
+        <div 
+          className="group relative p-4 bg-accent/5 border border-accent/30 rounded-2xl space-y-3 ring-1 ring-accent/20 shadow-lg shadow-accent/5 cursor-pointer hover:bg-accent/10 transition-all"
+          onClick={() => openEditor(config.activeThemeId)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+              <div className="text-[9px] font-bold text-accent uppercase tracking-[0.2em]">Custom Theme</div>
+            </div>
+            <button
+              className="p-1.5 rounded-lg bg-accent/20 text-accent hover:bg-accent/30 transition-all"
+              onClick={e => { e.stopPropagation(); openEditor(config.activeThemeId); }}
+              title="Edit custom colors"
+            >
+              <Edit2 className="w-3.5 h-3.5"/>
+            </button>
+          </div>
+          
+          <div>
+            <div className="text-sm font-bold text-text-primary">Based on {activeTheme.name}</div>
+            <p className="text-[10px] text-text-secondary leading-relaxed mt-1">You have modified this theme. Your changes are preserved here.</p>
+          </div>
+
+          <div className="flex gap-1.5 mt-2">
+            {customSwatches.map((c, i) => (
+              <div key={i} className="h-4 flex-1 rounded-md border border-white/10" style={{ background: c }} />
+            ))}
+          </div>
+
+          <div className="absolute -top-2 -right-2 px-2 py-0.5 bg-accent text-white text-[8px] font-bold rounded-full uppercase tracking-tighter shadow-sm">Active</div>
         </div>
-      </div>
+      ) : (
+        <div className="p-4 bg-bg-surface/50 border border-border-subtle rounded-2xl space-y-2">
+          <div className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.2em]">Active Theme</div>
+          <div className="text-sm font-bold text-text-primary">{activeTheme.name}</div>
+          <p className="text-[10px] text-text-secondary leading-relaxed">{activeTheme.description}</p>
+          <div className="flex gap-1.5 mt-2">
+            {activeTheme.swatchColors.map((c,i) => <div key={i} className="h-3 flex-1 rounded-sm" style={{ background:c }}/>)}
+          </div>
+        </div>
+      )}
 
       {/* Dark themes */}
       <div className="space-y-3">

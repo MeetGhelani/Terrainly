@@ -4,7 +4,7 @@ import { MapConfig, Overlay, Route } from "@/types/map";
 // Map of icon IDs to their SVG paths
 export const ICON_PATHS: Record<string, string> = {
   default: "M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z",
-  pin: "M15 5l-1.41-1.41A2 2 0 0 0 12.17 3H11V2h-1v1H8.83a2 2 0 0 0-1.42.59L6 5h9z M9 5v1h6V5H9z M12 22V11 M15 11l-1 1H10l-1-1h6z",
+  pin: "M12 17v5 M5 7h14l-2 8H7l-2-8z M12 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
   heart: "M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z",
   home: "m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9 22V12h6v10",
   star: "m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
@@ -50,7 +50,7 @@ export const updateOverlays = (map: maplibregl.Map, config: MapConfig, markersRe
       const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", ICON_PATHS[overlay.icon || 'default'] || ICON_PATHS.default);
       
-      if (['heart', 'star', 'circle', 'square', 'sun', 'moon', 'building', 'target', 'shop', 'flower', 'tree', 'flag'].includes(overlay.icon || '')) {
+      if (['pin', 'heart', 'star', 'circle', 'square', 'sun', 'moon', 'building', 'target', 'shop', 'flower', 'tree', 'flag'].includes(overlay.icon || '')) {
         svg.setAttribute("fill", overlay.color);
         svg.setAttribute("stroke", "white");
         svg.setAttribute("stroke-width", "1");

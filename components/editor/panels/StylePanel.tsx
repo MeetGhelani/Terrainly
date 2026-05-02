@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useMapStore } from "@/store/mapStore";
 import { Type, AlignLeft, AlignCenter, AlignRight, RotateCcw } from "lucide-react";
 
@@ -24,6 +24,45 @@ const FONT_VALUES: Record<string, string> = {
   "Outfit": "Outfit",
   "JetBrains Mono": "JetBrains Mono",
   "Libre Baskerville": "Libre Baskerville",
+};
+
+const FadeInput = ({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) => {
+  const [displayValue, setDisplayValue] = useState(value.toString());
+
+  // Sync internal state when external value changes (e.g. undo/redo)
+  useEffect(() => {
+    if (value.toString() !== displayValue && document.activeElement?.getAttribute('data-label') !== label) {
+      setDisplayValue(value.toString());
+    }
+  }, [value, label, displayValue]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVal = e.target.value.replace(/[^0-9]/g, ''); // Only digits
+    setDisplayValue(newVal);
+    
+    if (newVal !== "") {
+      const num = parseInt(newVal);
+      onChange(Math.min(100, Math.max(0, num)));
+    } else {
+      onChange(0);
+    }
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{label}</label>
+      <div className="relative">
+        <input
+          type="text"
+          data-label={label}
+          value={displayValue}
+          onChange={handleChange}
+          className="w-full bg-bg-surface border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors shadow-inner font-mono"
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-text-secondary font-bold">%</span>
+      </div>
+    </div>
+  );
 };
 
 // Reusable toggle
@@ -82,54 +121,26 @@ export const StylePanel = () => {
           {config.showOverlayLayer && (
             <div className="mt-4 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Top Fade</label>
-                  <div className="relative">
-                    <input
-                      type="number" min="0" max="100"
-                      value={config.overlayTopFade ?? 0}
-                      onChange={e => setConfig({ overlayTopFade: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
-                      className="w-full bg-bg-surface border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-text-secondary font-bold">%</span>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Bottom Fade</label>
-                  <div className="relative">
-                    <input
-                      type="number" min="0" max="100"
-                      value={config.overlayBottomFade ?? 0}
-                      onChange={e => setConfig({ overlayBottomFade: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
-                      className="w-full bg-bg-surface border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-text-secondary font-bold">%</span>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Left Fade</label>
-                  <div className="relative">
-                    <input
-                      type="number" min="0" max="100"
-                      value={config.overlayLeftFade ?? 0}
-                      onChange={e => setConfig({ overlayLeftFade: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
-                      className="w-full bg-bg-surface border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-text-secondary font-bold">%</span>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">Right Fade</label>
-                  <div className="relative">
-                    <input
-                      type="number" min="0" max="100"
-                      value={config.overlayRightFade ?? 0}
-                      onChange={e => setConfig({ overlayRightFade: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
-                      className="w-full bg-bg-surface border border-border-subtle rounded-lg px-3 py-2 text-sm text-text-primary focus:outline-none focus:border-accent transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-text-secondary font-bold">%</span>
-                  </div>
-                </div>
+                <FadeInput 
+                  label="Top Fade" 
+                  value={config.overlayTopFade ?? 0} 
+                  onChange={v => setConfig({ overlayTopFade: v })} 
+                />
+                <FadeInput 
+                  label="Bottom Fade" 
+                  value={config.overlayBottomFade ?? 0} 
+                  onChange={v => setConfig({ overlayBottomFade: v })} 
+                />
+                <FadeInput 
+                  label="Left Fade" 
+                  value={config.overlayLeftFade ?? 0} 
+                  onChange={v => setConfig({ overlayLeftFade: v })} 
+                />
+                <FadeInput 
+                  label="Right Fade" 
+                  value={config.overlayRightFade ?? 0} 
+                  onChange={v => setConfig({ overlayRightFade: v })} 
+                />
               </div>
             </div>
           )}

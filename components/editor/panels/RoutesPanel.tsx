@@ -18,7 +18,12 @@ export const RoutesPanel = () => {
       const content = event.target?.result as string;
       const newRoutes = parseGPX(content);
       if (newRoutes.length > 0) {
-        setConfig({ routes: [...config.routes, ...newRoutes] });
+        setConfig({ 
+          routes: [
+            ...config.routes, 
+            ...newRoutes.map(r => ({ ...r, color: config.themeColors.rail || config.themeColors.roads_major }))
+          ] 
+        });
       }
     };
     reader.readAsText(file);

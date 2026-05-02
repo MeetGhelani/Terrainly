@@ -44,8 +44,8 @@ export const OverlaysPanel = () => {
       lat: config.location.lat,
       lng: config.location.lng,
       label: iconId.charAt(0).toUpperCase() + iconId.slice(1),
-      icon: iconId, // Critical: store the icon ID
-      color: '#eab308', // Gold color from design
+      icon: iconId, 
+      color: config.themeColors.roads_major, 
       size: 32,
     };
     setConfig({ overlays: [...config.overlays, newOverlay] });
