@@ -6,7 +6,7 @@ Terrainly is a professional-grade creative suite designed for generating high-fi
 ![Terrainly Homepage Preview](/public/homepage.png)
 
 # Mobile Preview
-![Terrainly Mobile Preview](/public/mobile-preview.png) 
+<img src="/public/mobile-preview.png" width="300" alt="Terrainly Mobile Preview" />
 
 
 
