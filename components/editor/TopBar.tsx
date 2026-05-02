@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useStore } from "zustand";
 import { useMapStore } from "@/store/mapStore";
-import { Undo2, Redo2, Search, Share2, Download, Menu, Loader2, MapPin, X, Crosshair, Mountain } from "lucide-react";
+import { Undo2, Redo2, Search, Share2, Download, Menu, Loader2, MapPin, X, Crosshair, Mountain, HelpCircle } from "lucide-react";
+import { HelpModal } from "./HelpModal";
 import { useHotkeys } from "react-hotkeys-hook";
 import { searchLocation, SearchResult } from "@/lib/geocoding";
 
@@ -11,14 +13,15 @@ export const TopBar = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const { config, updateLocation, setConfig, setExportModalOpen } = useMapStore();
-  const { undo, redo, pastStates, futureStates } = useMapStore.temporal.getState();
+  const { undo, redo, pastStates, futureStates } = useStore(useMapStore.temporal, (state) => state);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Keyboard Shortcuts
   useHotkeys('ctrl+z, cmd+z', (e) => { e.preventDefault(); undo(); });
   useHotkeys('ctrl+shift+z, cmd+shift+z, ctrl+y, cmd+y', (e) => { e.preventDefault(); redo(); });
-  useHotkeys('ctrl+s, cmd+s', (e) => { e.preventDefault(); console.log("Exporting..."); });
+  useHotkeys('ctrl+s, cmd+s', (e) => { e.preventDefault(); setExportModalOpen(true); });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -250,6 +253,13 @@ export const TopBar = () => {
           >
             <Crosshair className="w-4 h-4 text-text-secondary group-hover:text-accent" />
           </button>
+          <button 
+            onClick={() => setIsHelpOpen(true)}
+            className="w-10 h-10 flex items-center justify-center bg-bg-panel border border-border-subtle rounded-xl hover:border-accent/50 hover:bg-accent/5 transition-all group"
+            title="How to Use"
+          >
+            <HelpCircle className="w-4 h-4 text-text-secondary group-hover:text-accent" />
+          </button>
         </div>
       </div>
 
@@ -277,6 +287,8 @@ export const TopBar = () => {
           <span>Export</span>
         </button>
       </div>
+
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </header>
   );
 };

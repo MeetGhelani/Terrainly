@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { 
   Map as MapIcon, 
   Palette, 
@@ -41,6 +42,11 @@ const TABS = [
 
 export const SidePanel = () => {
   const [activeTab, setActiveTab] = useState<string | null>("basemap");
+
+  useHotkeys("esc", () => setActiveTab(null), {
+    enabled: activeTab !== null,
+    enableOnFormTags: false, // Don't close if user is typing
+  });
 
   const handleTabClick = (id: string) => {
     if (activeTab === id) {
