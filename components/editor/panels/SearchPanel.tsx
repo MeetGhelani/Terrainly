@@ -5,7 +5,7 @@ import { Search, MapPin, Loader2, X, Navigation } from "lucide-react";
 import { useMapStore } from "@/store/mapStore";
 
 export const SearchPanel = () => {
-  const { config, updateLocation } = useMapStore();
+  const { config, updateLocation, setActiveTab } = useMapStore();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -37,16 +37,62 @@ export const SearchPanel = () => {
   const handleSelect = (result: any) => {
     const lat = parseFloat(result.lat);
     const lng = parseFloat(result.lon);
-    updateLocation(lat, lng, config.location.zoom, config.location.pitch || 0, config.location.bearing || 0, result.display_name.split(',')[0]);
+    const parts = result.display_name.split(",");
+    const city = parts[0].trim();
+    const country = parts.length > 1 ? parts[parts.length - 1].trim() : "";
+    
+    // Update global state including text labels
+    updateLocation(lat, lng, config.location.zoom, config.location.pitch || 0, config.location.bearing || 0, city);
+    
+    // Also explicitly update the subtitle in config if we found one
+    if (country) {
+      useMapStore.getState().setConfig({
+        text: {
+          ...config.text,
+          city,
+          subtitle: country
+        }
+      });
+    }
+
     setQuery("");
     setResults([]);
+    // Automatically close the panel after selection
+    setActiveTab(null);
   };
 
   const handleLocate = () => {
     if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition((position) => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
         const { latitude, longitude } = position.coords;
-        updateLocation(latitude, longitude, 12, 0, 0, "My Location");
+        
+        // Use reverse geocoding to find the actual city name
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Current Location";
+          const country = data.address.country || "";
+
+          updateLocation(latitude, longitude, 12, 0, 0, city);
+          
+          if (country) {
+            useMapStore.getState().setConfig({
+              text: {
+                ...config.text,
+                city,
+                subtitle: country
+              }
+            });
+          }
+        } catch (err) {
+          console.error("Reverse geocode error:", err);
+          updateLocation(latitude, longitude, 12, 0, 0, "Current Location");
+        } finally {
+          // Automatically close the panel after locating
+          setActiveTab(null);
+        }
       });
     }
   };

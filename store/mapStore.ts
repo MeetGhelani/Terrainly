@@ -51,20 +51,32 @@ export const useMapStore = create<MapState>()(
       },
       setExportModalOpen: (value) => set({ isExportModalOpen: value }),
       updateLocation: (lat, lng, zoom, pitch, bearing, label) =>
-        set((state) => ({
-          config: {
-            ...state.config,
-            location: {
-              ...state.config.location,
-              lat,
-              lng,
-              zoom,
-              pitch,
-              bearing,
-              label: label ?? state.config.location.label,
+        set((state) => {
+          // If a label is provided (from search), try to parse city and country
+          const textUpdate = label ? {
+            text: {
+              ...state.config.text,
+              city: label,
+              // We could potentially parse country here if the label contains it
+            }
+          } : {};
+
+          return {
+            config: {
+              ...state.config,
+              ...textUpdate,
+              location: {
+                ...state.config.location,
+                lat,
+                lng,
+                zoom,
+                pitch,
+                bearing,
+                label: label ?? state.config.location.label,
+              },
             },
-          },
-        })),
+          };
+        }),
       resetConfig: () => set({ config: DEFAULT_MAP_CONFIG }),
     }),
     {

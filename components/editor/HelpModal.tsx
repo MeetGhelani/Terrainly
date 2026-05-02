@@ -6,7 +6,7 @@ import {
   X, Map as MapIcon, Palette, Layers, MousePointer2, 
   Navigation, Type, Download, Grid, Compass, 
   Mountain, Share2, Info, ChevronRight, Check,
-  Zap, Command, Mouse, Sparkles, Sliders, Eye
+  Zap, Command, Mouse, Sparkles, Sliders, Eye, Smartphone
 } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -144,6 +144,30 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                     <p className="text-xs text-text-secondary leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
+              </div>
+
+              <div className="bg-bg-elevated/40 p-6 md:p-8 rounded-[2rem] border border-border-subtle flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                <div className="space-y-4 flex-1 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-[9px] font-bold uppercase tracking-widest">
+                    <Smartphone className="w-3 h-3" /> Mobile Optimized
+                  </div>
+                  <h4 className="text-xl font-bold text-text-primary">Studio on the Go</h4>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    Terrainly is now fully responsive. Design, customize, and export your map art directly from your smartphone with our touch-optimized mobile studio.
+                  </p>
+                </div>
+                <div className="w-full md:w-48 aspect-[9/16] bg-bg-surface border border-border-subtle rounded-2xl overflow-hidden shadow-2xl relative group">
+                  <img 
+                    src="/mobile-preview.png" 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    alt="Mobile Studio Preview"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=400';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-center pb-4">
+                  </div>
+                </div>
               </div>
 
               <div className="flex justify-center">
