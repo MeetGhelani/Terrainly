@@ -2,12 +2,12 @@
 
 Terrainly is a professional-grade creative suite designed for generating high-fidelity map art, cinematic posters, and high-resolution wallpapers from any location on Earth. Combining advanced 3D terrain data with a minimalist design aesthetic, it allows users to transform geographical data into stunning physical or digital art.
 
-
-![Terrainly Homepage Preview](/public/homepage.png)
 # Desktop Preview
+![Terrainly Homepage Preview](/public/homepage.png)
 
-![Terrainly Mobile Preview](/public/mobile-preview.png) 
 # Mobile Preview
+![Terrainly Mobile Preview](/public/mobile-preview.png) 
+
 
 
 ## 🚀 Key Features
