@@ -127,7 +127,6 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
 
       {/* ── Content Layout ── */}
       <div className="relative z-10 w-full h-full flex flex-col items-center justify-start overflow-hidden">
-        <InfoBox variant="compact" />
         <InfoBox variant="fixed" />
 
         <div className="flex-1 w-full flex items-center justify-center relative overflow-hidden md:mt-0 -mt-25">
