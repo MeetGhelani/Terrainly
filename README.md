@@ -1,4 +1,4 @@
-# Terrainly — Premium Cartographic Poster Studio
+# <img src="/public/logos/logo.png" width="32" height="32" valign="middle" /> Terrainly — Premium Cartographic Poster Studio
 
 Terrainly is a professional-grade creative suite designed for generating high-fidelity map art, cinematic posters, and high-resolution wallpapers from any location on Earth. Combining advanced 3D terrain data with a minimalist design aesthetic, it allows users to transform geographical data into stunning physical or digital art.
 
@@ -12,8 +12,15 @@ Terrainly is a professional-grade creative suite designed for generating high-fi
 *   **Precision Coordinate Grids**: Customizable technical overlays with adjustable spacing, thickness, and color.
 *   **High-Resolution Export**: Export your compositions as pixel-perfect PNGs optimized for print or social media (Instagram, A3, 24x36, etc.).
 *   **1:1 Visual Fidelity**: What you see in the editor is exactly what you get in the final export, thanks to our synchronized rendering pipeline.
+*   **Persistent Custom Theming**: Personalize every aspect of the map with a custom palette that persists across your creative session.
+*   **Artistic Overlays & GPX**: Import trails and add markers (pins, hearts, stars) that automatically sync with your chosen theme colors.
+*   **Studio Masterclass**: An interactive, in-app guide accessible via the `?` icon to help you master every tool in seconds.
+*   **Power-User Shortcuts**: Professional-grade keyboard controls (`Ctrl+Z`, `Ctrl+Y`, `Ctrl+S`, `ESC`) for a lightning-fast workflow.
+
 
 ## 🛠 How to Use
+
+![Terrainly Help Guide Preview](/public/help-guide.png)
 
 1.  **Find Your Muse**: Use the global search bar to navigate to any city, mountain range, or landmark.
 2.  **Shape the View**: Use right-click and drag to tilt the map into 3D mode. Adjust the "Map Details" slider to control the coverage radius.
