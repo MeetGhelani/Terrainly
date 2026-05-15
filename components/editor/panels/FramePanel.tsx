@@ -12,6 +12,7 @@ const TEXTURES = [
   { id: "aged", label: "Aged Paper" },
   { id: "kraft", label: "Kraft Paper" },
   { id: "noise", label: "Subtle Noise" },
+  { id: "crumpled", label: "Crumpled Paper" },
 ];
 
 const FRAME_STYLES = [
@@ -19,16 +20,29 @@ const FRAME_STYLES = [
   { id: "thin", label: "Thin Line" },
   { id: "double", label: "Double Line" },
   { id: "ornate", label: "Vintage Ornate" },
+  { id: "oak", label: "Aged Oak" },
+  { id: "walnut", label: "Walnut" },
+  { id: "mahogany", label: "Mahogany" },
+  { id: "aluminum", label: "Brushed Steel" },
+  { id: "gold", label: "Antique Gold" },
+  { id: "black-gallery", label: "Gallery Black" },
 ];
 
 export const FramePanel = () => {
   const { config, setConfig } = useMapStore();
 
   const updateFrame = (patch: Partial<typeof config.frame>) => {
+    // If switching to ornate, default to 3px if not already substantial
+    if (patch.style === 'ornate' && config.frame.style !== 'ornate') {
+      patch.thickness = 3;
+    }
+    
     setConfig({
       frame: { ...config.frame, ...patch },
     });
   };
+
+  const currentFrameColor = config.frame.color || config.themeColors.text || "#ffffff";
 
   return (
     <div className="space-y-8">
@@ -62,6 +76,7 @@ export const FramePanel = () => {
             <ColorPicker
               label="Border Color"
               value={config.frame.color}
+              defaultValue={config.themeColors.text}
               onChange={(color) => updateFrame({ color })}
             />
 
@@ -112,6 +127,28 @@ export const FramePanel = () => {
             </button>
           ))}
         </div>
+
+        {config.frame.texture !== "none" && (
+          <div className="pt-2 space-y-1.5 animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-semibold text-text-secondary uppercase tracking-wider">
+                Texture Intensity
+              </label>
+              <span className="text-[10px] font-mono text-text-muted">
+                {config.frame.textureOpacity}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={config.frame.textureOpacity}
+              onChange={(e) => updateFrame({ textureOpacity: parseInt(e.target.value) })}
+              className="w-full h-1.5 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+            />
+          </div>
+        )}
       </div>
 
       {/* Effects */}

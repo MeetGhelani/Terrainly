@@ -13,6 +13,18 @@ import maplibregl from 'maplibre-gl';
 import { applyLayerStyling, applyTerrainStyling } from "@/lib/map/style-builder";
 import { project } from "@/lib/map/projection";
 import { ICON_PATHS } from "@/lib/map/overlays";
+import { TEXTURES } from "@/lib/map/textures";
+
+// Helper to load an image for canvas
+const loadImage = (url: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load image: ${url}`));
+    img.src = url;
+  });
+};
 import { injectPNGDPI } from "@/lib/map/png-metadata";
 import { LAYOUT_RATIOS, getDimScale } from "@/lib/map/layout";
 import { getCompassSVG } from "@/lib/map/compass-assets";
@@ -260,9 +272,11 @@ export const ExportPanel = () => {
 
       // ── Overlay D: Compass Rose ───────────────────────────────────────────────
       if (config.cartography.compass) {
-        const minDim = Math.min(targetW, targetH);
-        const compassSize   = minDim * LAYOUT_RATIOS.COMPASS_SIZE_RATIO;
-        const compassOffset = minDim * LAYOUT_RATIOS.COMPASS_OFFSET_RATIO;
+        const frameThicknessRaw = config.frame.style !== 'none' ? config.frame.thickness * 4 : 0;
+        const frameThickness = frameThicknessRaw * scale;
+
+        const compassSize   = (config.cartography.compassSize || 64) * scale;
+        const compassOffset = ((config.cartography.compassMargin ?? 20) * scale) + frameThickness;
         const compassColor  = config.themeColors.text || '#ffffff';
         const pos           = config.cartography.compassPosition || 'br'; 
 
@@ -279,15 +293,23 @@ export const ExportPanel = () => {
         const drawX = pos.endsWith('r')   ? targetW - compassOffset - compassSize : compassOffset;
         const drawY = pos.startsWith('b')  ? targetH - compassOffset - compassSize : compassOffset;
 
+        oc.save();
+        oc.globalAlpha = config.cartography.compassOpacity ?? 0.8;
         oc.drawImage(compassImg, drawX, drawY, compassSize, compassSize);
+        oc.restore();
         URL.revokeObjectURL(svgUrl);
       }
 
       // ── Overlay F: Typography ────────────────────────────────────────────────
       if (config.showPosterText) {
         oc.fillStyle = config.text.color || config.themeColors.text || '#ffffff';
-        const paddingX = targetW * LAYOUT_RATIOS.PADDING_X;
-        const paddingY = targetH * LAYOUT_RATIOS.PADDING_Y;
+        
+        const frameThicknessRaw = config.frame.style !== 'none' ? config.frame.thickness * 4 : 0;
+        const frameThickness = frameThicknessRaw * scale;
+
+        const paddingX = (targetW * LAYOUT_RATIOS.PADDING_X) + frameThickness;
+        const paddingY = (targetH * LAYOUT_RATIOS.PADDING_Y) + frameThickness + (config.text.offsetY * scale);
+        
         const mtSubtitle = targetH * LAYOUT_RATIOS.TYPO_GAP_SUBTITLE;
         const mtTagline  = targetH * LAYOUT_RATIOS.TYPO_GAP_TAGLINE;
         const font = `'${config.text.font}', sans-serif`;
@@ -306,7 +328,8 @@ export const ExportPanel = () => {
           oc.globalAlpha = 1.0;
         };
 
-        const anchorX = config.text.alignment === 'center' ? targetW / 2 : config.text.alignment === 'right' ? targetW - paddingX : paddingX;
+        const horizontalShift = config.text.offsetX * scale;
+        const anchorX = (config.text.alignment === 'center' ? targetW / 2 : config.text.alignment === 'right' ? targetW - paddingX : paddingX) + horizontalShift;
         const isTop = config.text.position === 'top';
 
         // Match the Math.max logic in MapCanvas to preserve proportions on small fonts
@@ -384,6 +407,32 @@ export const ExportPanel = () => {
       ctx.fillStyle = config.poster.bgColor || '#070b12';
       ctx.fillRect(0, 0, targetW, targetH);
 
+      // ── Overlay Texture Background ──
+      if (config.frame.texture !== 'none') {
+        ctx.save();
+        const colors: Record<string, string> = {
+          parchment: '#f4e4bc',
+          linen: '#faf9f6',
+          aged: '#dcb35c',
+          noise: '#ffffff',
+          kraft: '#a68064'
+        };
+        ctx.fillStyle = colors[config.frame.texture] || '#ffffff';
+        ctx.globalAlpha = (config.frame.textureOpacity ?? 40) / 100;
+        ctx.fillRect(0, 0, targetW, targetH);
+        
+        // Add Procedural Noise for texture
+        ctx.globalAlpha = 0.05 * ((config.frame.textureOpacity ?? 40) / 40);
+        for (let i = 0; i < 10000; i++) {
+          const x = Math.random() * targetW;
+          const y = Math.random() * targetH;
+          const size = Math.random() * 2 * scale;
+          ctx.fillStyle = Math.random() > 0.5 ? '#000' : '#fff';
+          ctx.fillRect(x, y, size, size);
+        }
+        ctx.restore();
+      }
+
       const mapImg = await new Promise<HTMLImageElement>((resolve) => {
         const img = new Image();
         img.onload = () => resolve(img);
@@ -391,6 +440,216 @@ export const ExportPanel = () => {
       });
       ctx.drawImage(mapImg, 0, 0, targetW, targetH);
       ctx.drawImage(overlayCanvas, 0, 0);
+
+      // ── Step F.5: Apply Paper Texture ───────────────────────────────────────
+      const textureUrl = TEXTURES[config.frame.texture as keyof typeof TEXTURES];
+      if (textureUrl && config.frame.texture !== 'none' && config.frame.textureOpacity > 0) {
+        try {
+          const textureImg = await loadImage(textureUrl);
+          ctx.save();
+          ctx.globalCompositeOperation = 'multiply';
+          ctx.globalAlpha = config.frame.textureOpacity / 100;
+          
+          // Apply only inside the safe area (excluding physical frame padding)
+          const framePadding = (config.frame.thickness * 4) * scale;
+          const contentX = framePadding;
+          const contentY = framePadding;
+          const contentW = targetW - framePadding * 2;
+          const contentH = targetH - framePadding * 2;
+          
+          // Smart "Cover" scaling for the texture
+          const textureRatio = textureImg.width / textureImg.height;
+          const contentRatio = contentW / contentH;
+          let drawW, drawH, drawX, drawY;
+          
+          if (textureRatio > contentRatio) {
+            drawH = contentH;
+            drawW = contentH * textureRatio;
+            drawX = contentX - (drawW - contentW) / 2;
+            drawY = contentY;
+          } else {
+            drawW = contentW;
+            drawH = contentW / textureRatio;
+            drawX = contentX;
+            drawY = contentY - (drawH - contentH) / 2;
+          }
+          
+          ctx.drawImage(textureImg, drawX, drawY, drawW, drawH);
+          ctx.restore();
+        } catch (err) {
+          console.warn("Texture load failed, skipping blending:", err);
+        }
+      }
+
+      // ── Overlay G: Realistic Frame ──────────────────────────────────────────
+      if (config.frame.style !== 'none') {
+        ctx.save();
+        const thickness = config.frame.thickness * scale;
+        const outerPad = thickness * 2;
+        const frameW = thickness * 4; // Total width of the frame structure
+
+        // 1. Draw Inner Map Shadow for depth
+        if (config.frame.shadow) {
+          ctx.shadowColor = 'rgba(0,0,0,0.8)';
+          ctx.shadowBlur = 30 * scale;
+          ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+          ctx.lineWidth = 2 * scale;
+          ctx.strokeRect(outerPad, outerPad, targetW - outerPad*2, targetH - outerPad*2);
+          ctx.shadowBlur = 0;
+        }
+
+        // 2. Define the Frame Path (Hollow Rect) - Only for Material Frames
+        const isMaterialFrame = ['oak', 'walnut', 'mahogany', 'aluminum', 'gold', 'black-gallery'].includes(config.frame.style);
+        
+        if (isMaterialFrame) {
+          ctx.beginPath();
+          ctx.rect(0, 0, targetW, targetH);
+          ctx.rect(frameW, frameW, targetW - frameW*2, targetH - frameW*2);
+          ctx.clip('evenodd');
+        }
+
+        // 3. Draw the Material
+        switch (config.frame.style) {
+          case 'oak':
+          case 'walnut':
+          case 'mahogany':
+          case 'aluminum':
+          case 'gold':
+          case 'black-gallery': {
+            const thickness = (config.frame.thickness * 4) * scale;
+            
+            const drawBar = (x: number, y: number, w: number, h: number, isVertical: boolean) => {
+              ctx.save();
+              const style = config.frame.style;
+              
+              if (style === 'oak') {
+                ctx.fillStyle = '#5d3a1a';
+                ctx.fillRect(x, y, w, h);
+                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = '#8b5a2b';
+                for (let i = 0; i < (isVertical ? w : h); i += 4 * scale) {
+                  if (isVertical) ctx.fillRect(x + i, y, 2 * scale, h);
+                  else ctx.fillRect(x, y + i, w, 2 * scale);
+                }
+              } else if (style === 'walnut') {
+                ctx.fillStyle = '#2d1b0f';
+                ctx.fillRect(x, y, w, h);
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = '#3d2b1f';
+                for (let i = 0; i < (isVertical ? w : h); i += 2 * scale) {
+                  if (isVertical) ctx.fillRect(x + i, y, 1 * scale, h);
+                  else ctx.fillRect(x, y + i, w, 1 * scale);
+                }
+              } else if (style === 'mahogany') {
+                ctx.fillStyle = '#600000';
+                ctx.fillRect(x, y, w, h);
+                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = '#800000';
+                for (let i = 0; i < (isVertical ? w : h); i += 4 * scale) {
+                  if (isVertical) ctx.fillRect(x + i, y, 2 * scale, h);
+                  else ctx.fillRect(x, y + i, w, 2 * scale);
+                }
+              } else if (style === 'aluminum') {
+                const grad = isVertical ? ctx.createLinearGradient(x, y, x+w, y) : ctx.createLinearGradient(x, y, x, y+h);
+                grad.addColorStop(0, '#999'); grad.addColorStop(0.5, '#eee'); grad.addColorStop(1, '#999');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, w, h);
+              } else if (style === 'gold') {
+                const grad = isVertical ? ctx.createLinearGradient(x, y, x+w, y) : ctx.createLinearGradient(x, y, x, y+h);
+                grad.addColorStop(0, '#d4af37'); grad.addColorStop(0.5, '#f9f295'); grad.addColorStop(1, '#b8860b');
+                ctx.fillStyle = grad;
+                ctx.fillRect(x, y, w, h);
+              } else if (style === 'black-gallery') {
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(x, y, w, h);
+              }
+              
+              // Internal Shadow for depth
+              ctx.globalAlpha = 0.3;
+              ctx.fillStyle = '#000';
+              if (isVertical) {
+                if (x === 0) ctx.fillRect(x + w - 2*scale, y, 2*scale, h);
+                else ctx.fillRect(x, y, 2*scale, h);
+              } else {
+                if (y === 0) ctx.fillRect(x, y + h - 2*scale, w, 2*scale);
+                else ctx.fillRect(x, y, 2*scale, w);
+              }
+              ctx.restore();
+            };
+
+            drawBar(0, 0, targetW, thickness, false); // Top
+            drawBar(0, targetH - thickness, targetW, thickness, false); // Bottom
+            drawBar(0, thickness, thickness, targetH - thickness*2, true); // Left
+            drawBar(targetW - thickness, thickness, thickness, targetH - thickness*2, true); // Right
+            break;
+          }
+
+          case 'thin':
+          case 'double':
+          case 'ornate': {
+            const color = config.frame.color || config.themeColors.text || '#ffffff';
+            const thickness = config.frame.thickness * scale;
+            const safePadding = (config.frame.thickness * 4) * scale;
+            const gap = (config.frame.thickness * 2) * scale;
+
+            ctx.fillStyle = color;
+            
+            const drawFrameRect = (x: number, y: number, w: number, h: number, weight: number) => {
+              ctx.fillRect(x, y, w, weight); // Top
+              ctx.fillRect(x, y + h - weight, w, weight); // Bottom
+              ctx.fillRect(x, y + weight, weight, h - weight * 2); // Left
+              ctx.fillRect(x + w - weight, y + weight, weight, h - weight * 2); // Right
+            };
+
+            if (config.frame.style === 'thin') {
+              drawFrameRect(safePadding, safePadding, targetW - safePadding*2, targetH - safePadding*2, thickness);
+            } else if (config.frame.style === 'double') {
+              // Outer thick (Match border-width: thickness * 1.5)
+              drawFrameRect(safePadding, safePadding, targetW - safePadding*2, targetH - safePadding*2, thickness * 1.5);
+              // Inner hairline (Match top: -gap)
+              ctx.globalAlpha = 0.8;
+              const pInner = safePadding - gap;
+              drawFrameRect(pInner, pInner, targetW - pInner*2, targetH - pInner*2, 1 * scale);
+              ctx.globalAlpha = 1.0;
+            } else if (config.frame.style === 'ornate') {
+              // Main boundary
+              drawFrameRect(safePadding, safePadding, targetW - safePadding*2, targetH - safePadding*2, thickness);
+              
+              // Outer spread (Match top: -gap)
+              ctx.globalAlpha = 0.6;
+              const pOuter = safePadding - gap;
+              drawFrameRect(pOuter, pOuter, targetW - pOuter*2, targetH - pOuter*2, 1 * scale);
+              
+              // Inner spread (Match top: gap)
+              const pInner = safePadding + gap;
+              drawFrameRect(pInner, pInner, targetW - pInner*2, targetH - pInner*2, 1 * scale);
+              
+              // Corner L-Accents (Match MapCanvas -top-3 -left-3)
+              ctx.globalAlpha = 1.0;
+              // Align with the outermost spread line (safePadding - gap)
+              const accentOffset = safePadding - gap; 
+              const accentSize = 20 * scale; // Slightly tighter size for a refined look
+              const accentWeight = 2 * scale;
+              
+              ctx.strokeStyle = color;
+              ctx.lineWidth = accentWeight;
+              ctx.lineCap = 'square';
+              
+              // Top Left
+              ctx.beginPath(); ctx.moveTo(accentOffset, accentOffset + accentSize); ctx.lineTo(accentOffset, accentOffset); ctx.lineTo(accentOffset + accentSize, accentOffset); ctx.stroke();
+              // Top Right
+              ctx.beginPath(); ctx.moveTo(targetW - accentOffset - accentSize, accentOffset); ctx.lineTo(targetW - accentOffset, accentOffset); ctx.lineTo(targetW - accentOffset, accentOffset + accentSize); ctx.stroke();
+              // Bottom Left
+              ctx.beginPath(); ctx.moveTo(accentOffset, targetH - accentOffset - accentSize); ctx.lineTo(accentOffset, targetH - accentOffset); ctx.lineTo(accentOffset + accentSize, targetH - accentOffset); ctx.stroke();
+              // Bottom Right
+              ctx.beginPath(); ctx.moveTo(targetW - accentOffset - accentSize, targetH - accentOffset); ctx.lineTo(targetW - accentOffset, targetH - accentOffset); ctx.lineTo(targetW - accentOffset, targetH - accentOffset - accentSize); ctx.stroke();
+            }
+            break;
+          }
+        }
+        ctx.restore();
+      }
+
       // ─── STEP 4.5: Watermark ──────────────────────────────────────────────────
       if (config.watermark) {
         ctx.save();

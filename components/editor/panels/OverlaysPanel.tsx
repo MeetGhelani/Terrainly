@@ -51,11 +51,58 @@ export const OverlaysPanel = () => {
     setConfig({ overlays: [...config.overlays, newOverlay] });
   };
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (limit to 1MB to avoid bloated localStorage)
+    if (file.size > 1024 * 1024) {
+      alert("Marker image must be under 1MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      const newMarker = {
+        id: crypto.randomUUID(),
+        url: dataUrl,
+        name: file.name.split('.')[0]
+      };
+      
+      setConfig({ 
+        uploadedMarkers: [...(config.uploadedMarkers || []), newMarker] 
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const addCustomMarker = (url: string, name: string) => {
+    const newOverlay: Overlay = {
+      id: crypto.randomUUID(),
+      type: 'marker',
+      lat: config.location.lat,
+      lng: config.location.lng,
+      label: name,
+      icon: url, // Store the data URL as the icon ID
+      color: config.themeColors.roads_major,
+      size: 48, // Default larger for custom icons
+    };
+    setConfig({ overlays: [...config.overlays, newOverlay] });
+  };
+
+  const removeUploadedMarker = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setConfig({
+      uploadedMarkers: config.uploadedMarkers.filter(m => m.id !== id)
+    });
+  };
+
   return (
     <div className="space-y-7 pb-6 select-none pt-2">
       {/* Marker Icons Section */}
       <div className="space-y-4">
-        <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-80">Marker Icons</h3>
+        <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-80">Standard Markers</h3>
         <div className="grid grid-cols-4 gap-2.5">
           {(showAll ? MARKER_ICONS : MARKER_ICONS.slice(0, 11)).map((item) => (
             <button
@@ -88,19 +135,47 @@ export const OverlaysPanel = () => {
 
       {/* Uploaded Markers Section */}
       <div className="space-y-4 pt-2">
-        <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-80">Uploaded Markers</h3>
+        <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-80 flex items-center justify-between">
+          Your Uploads
+          <span className="text-[8px] font-medium opacity-50 lowercase tracking-normal">Supports SVG, PNG</span>
+        </h3>
         <div className="grid grid-cols-4 gap-2.5">
+          {/* Custom Uploaded Markers */}
+          {config.uploadedMarkers?.map((m) => (
+            <button 
+              key={m.id}
+              onClick={() => addCustomMarker(m.url, m.name)}
+              className="relative flex flex-col items-center justify-center gap-2 p-4 min-h-[96px] rounded-xl bg-bg-panel/40 border border-white/5 hover:border-accent/30 group transition-all"
+            >
+              <img src={m.url} alt={m.name} className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
+              <button 
+                onClick={(e) => removeUploadedMarker(e, m.id)}
+                className="absolute top-1 right-1 p-1 text-text-muted hover:text-danger opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+              <span className="text-[9px] font-bold text-text-secondary truncate w-full text-center">{m.name}</span>
+            </button>
+          ))}
+
+          {/* Upload Button */}
           <button 
             onClick={() => fileInputRef.current?.click()}
             className="flex flex-col items-center justify-center gap-2 p-4 min-h-[96px] rounded-xl border-2 border-dashed border-white/10 hover:border-accent/30 hover:bg-accent/5 group transition-all"
           >
             <div className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 group-hover:bg-accent/20 transition-all">
-              <Plus className="w-5 h-5 text-text-muted group-hover:text-accent" />
+              <Upload className="w-4 h-4 text-text-muted group-hover:text-accent" />
             </div>
-            <span className="text-[10px] font-bold text-text-muted group-hover:text-text-primary text-center leading-tight uppercase tracking-wider mt-1">Upload Marker</span>
+            <span className="text-[10px] font-bold text-text-muted group-hover:text-text-primary text-center leading-tight uppercase tracking-wider mt-1">Add Icon</span>
           </button>
         </div>
-        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" />
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          accept=".svg,.png,.jpg,.jpeg" 
+          onChange={handleFileUpload}
+        />
       </div>
 
       {/* Active Selection List (Minimalist) */}

@@ -20,7 +20,7 @@ export const ICON_PATHS: Record<string, string> = {
   shop: "M3 9 2 21h20l-1-12z M12 3a6 6 0 0 0-6 6h12a6 6 0 0 0-6-6z",
   camera: "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z M12 17a4 4 0 1 1 0-8 4 4 0 0 1 0 8z",
   flower: "M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0zm0 0a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 0a3 3 0 1 0-6 0 3 3 0 0 0 6 0z",
-  tree: "m12 19 8-7h-5l4-5H9l4 5H8l8 7h-4v3h-2v-3z",
+  tree: "M12 2L4 12h3l-4 6h18l-4-6h3L12 2z M11 18h2v4h-2v-4z",
   flag: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M4 22v-7",
 };
 
@@ -36,28 +36,40 @@ export const updateOverlays = (map: maplibregl.Map, config: MapConfig, markersRe
       el.style.height = `${overlay.size}px`;
       el.style.cursor = 'pointer';
 
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("viewBox", "0 0 24 24");
-      svg.setAttribute("fill", "none");
-      svg.setAttribute("stroke", overlay.color);
-      svg.setAttribute("stroke-width", "2");
-      svg.setAttribute("stroke-linecap", "round");
-      svg.setAttribute("stroke-linejoin", "round");
-      svg.style.width = "100%";
-      svg.style.height = "100%";
-      svg.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.4))";
+      // Handle Data URL Icons (Uploaded Markers)
+      if (overlay.icon?.startsWith('data:')) {
+        const img = document.createElement('img');
+        img.src = overlay.icon;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        img.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.4))";
+        el.appendChild(img);
+      } else {
+        // Handle Internal SVG Icons
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", overlay.color);
+        svg.setAttribute("stroke-width", "2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        svg.style.width = "100%";
+        svg.style.height = "100%";
+        svg.style.filter = "drop-shadow(0 2px 4px rgba(0,0,0,0.4))";
 
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", ICON_PATHS[overlay.icon || 'default'] || ICON_PATHS.default);
-      
-      if (['pin', 'heart', 'star', 'circle', 'square', 'sun', 'moon', 'building', 'target', 'shop', 'flower', 'tree', 'flag'].includes(overlay.icon || '')) {
-        svg.setAttribute("fill", overlay.color);
-        svg.setAttribute("stroke", "white");
-        svg.setAttribute("stroke-width", "1");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", ICON_PATHS[overlay.icon || 'default'] || ICON_PATHS.default);
+        
+        if (['pin', 'heart', 'star', 'circle', 'square', 'sun', 'moon', 'building', 'target', 'shop', 'flower', 'tree', 'flag'].includes(overlay.icon || '')) {
+          svg.setAttribute("fill", overlay.color);
+          svg.setAttribute("stroke", "white");
+          svg.setAttribute("stroke-width", "1");
+        }
+
+        svg.appendChild(path);
+        el.appendChild(svg);
       }
-
-      svg.appendChild(path);
-      el.appendChild(svg);
 
       const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
         .setLngLat([overlay.lng, overlay.lat])

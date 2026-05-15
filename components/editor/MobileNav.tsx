@@ -5,6 +5,7 @@ import {
   Search,
   Palette, 
   Square, 
+  Layout,
   Type, 
   Layers, 
   Pin, 
@@ -22,7 +23,8 @@ function cn(...inputs: ClassValue[]) {
 const TABS = [
   { id: "search", icon: Search, label: "Location" },
   { id: "basemap", icon: Palette, label: "Theme" },
-  { id: "layout", icon: Square, label: "Layout" },
+  { id: "layout", icon: Layout, label: "Layout" },
+  { id: "frame", icon: Square, label: "Frame" },
   { id: "style", icon: Type, label: "Style" },
   { id: "layers", icon: Layers, label: "Layers" },
   { id: "overlays", icon: Pin, label: "Markers" },
@@ -42,7 +44,7 @@ export const MobileNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-bg-panel/80 backdrop-blur-xl border-t border-border-subtle flex md:hidden items-center justify-start overflow-x-auto z-[60] safe-area-pb custom-scrollbar-h">
+    <nav className="fixed bottom-0 left-0 right-0 h-20 bg-bg-panel/80 backdrop-blur-xl border-t border-border-subtle flex md:hidden items-center justify-start overflow-x-auto overflow-y-hidden z-[60] safe-area-pb custom-scrollbar-h">
       {TABS.map((tab) => (
         <button
           key={tab.id}

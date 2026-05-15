@@ -277,8 +277,9 @@ export const LayersPanel = () => {
                 ))}
               </div>
 
-              <div className="space-y-2.5 pt-2">
-                <span className="text-[11px] text-text-secondary font-bold uppercase tracking-wider">Position</span>
+
+              <div className="space-y-2.5 pt-2 pb-4">
+                <span className="text-[11px] text-text-secondary font-bold uppercase tracking-wider">Corner Position</span>
                 <div className="grid grid-cols-2 gap-1.5 w-16 h-16 p-1.5 bg-bg-elevated/20 rounded border border-border-subtle/30">
                   {(['tl', 'tr', 'bl', 'br'] as const).map((pos) => (
                     <button
@@ -294,6 +295,67 @@ export const LayersPanel = () => {
                     />
                   ))}
                 </div>
+              </div>
+
+              {/* Compass Sliders */}
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[11px] text-text-secondary font-medium uppercase tracking-wider">
+                    <span>Size</span>
+                    <span>{config.cartography.compassSize || 64}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="32"
+                    max="200"
+                    step="4"
+                    value={config.cartography.compassSize || 64}
+                    onChange={(e) => setConfig({
+                      cartography: { ...config.cartography, compassSize: parseInt(e.target.value) }
+                    })}
+                    className="w-full h-1 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[11px] text-text-secondary font-medium uppercase tracking-wider">
+                    <span>Opacity</span>
+                    <span>{Math.round((config.cartography.compassOpacity ?? 0.8) * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="1"
+                    step="0.05"
+                    value={config.cartography.compassOpacity ?? 0.8}
+                    onChange={(e) => setConfig({
+                      cartography: { ...config.cartography, compassOpacity: parseFloat(e.target.value) }
+                    })}
+                    className="w-full h-1 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[11px] text-text-secondary font-medium uppercase tracking-wider">
+                    <span>Margin from Corner</span>
+                    <span>{config.cartography.compassMargin ?? 20}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    step="2"
+                    value={config.cartography.compassMargin ?? 20}
+                    onChange={(e) => setConfig({
+                      cartography: { ...config.cartography, compassMargin: parseInt(e.target.value) }
+                    })}
+                    className="w-full h-1 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+                  />
+                </div>
+                
+                <p className="text-[10px] text-text-muted italic bg-bg-surface/30 p-2 rounded leading-relaxed">
+                  Tip: Use margin to clear thick map borders.
+                </p>
               </div>
             </div>
           )}

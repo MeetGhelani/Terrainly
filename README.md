@@ -13,15 +13,15 @@ Terrainly is a professional-grade creative suite designed for generating high-fi
 ## 🚀 Key Features
 
 *   **Global 3D Terrain Engine**: Real-time 3D elevation rendering allowing you to tilt, rotate, and explore mountains and valleys in high detail.
+*   **Aesthetic Texture Blending**: Premium tactile overlays including **Crumpled Paper**, Parchment, and Linen styles. Uses advanced `overlay` blending for realistic, high-fidelity map art.
+*   **Session Persistence & Auto-Save**: Never lose a design. Your creative progress is automatically synced to local storage, allowing you to pick up exactly where you left off.
+*   **Custom Marker Gallery**: Upload your own **SVG, PNG, or JPG** icons to create truly unique map markers. Features a persistent "Your Uploads" gallery for easy reuse.
 *   **Artistic Typography System**: A curated collection of premium fonts (Playfair, Lora, Outfit, etc.) designed for editorial-grade poster layouts.
 *   **Dynamic Layer Management**: Granular control over map elements including landcover, buildings, water, and road visibility.
 *   **Precision Coordinate Grids**: Customizable technical overlays with adjustable spacing, thickness, and color.
 *   **High-Resolution Export**: Export your compositions as pixel-perfect PNGs optimized for print or social media (Instagram, A3, 24x36, etc.).
-*   **1:1 Visual Fidelity**: What you see in the editor is exactly what you get in the final export, thanks to our synchronized rendering pipeline.
-*   **Persistent Custom Theming**: Personalize every aspect of the map with a custom palette that persists across your creative session.
-*   **Artistic Overlays & GPX**: Import trails and add markers (pins, hearts, stars) that automatically sync with your chosen theme colors.
-*   **Fully Responsive Mobile Studio**: A touch-optimized mobile experience that allows for full artistic control, from location search to high-resolution export, directly on your smartphone.
-*   **Studio Masterclass**: An interactive, in-app guide accessible via the `?` icon to help you master every tool in seconds.
+*   **1:1 Visual Fidelity**: Our synchronized rendering pipeline ensures that your final high-resolution export perfectly matches the studio design, including all textures and overlays.
+*   **Fully Responsive Mobile Studio**: A touch-optimized mobile experience with a horizontal tabbed navigation, allowing for full artistic control directly on your smartphone.
 *   **Power-User Shortcuts**: Professional-grade keyboard controls (`Ctrl+Z`, `Ctrl+Y`, `Ctrl+S`, `ESC`) for a lightning-fast workflow.
 
 

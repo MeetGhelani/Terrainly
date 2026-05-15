@@ -50,6 +50,9 @@ export interface CartographyConfig {
   compass: boolean;
   compassStyle: 'minimal' | 'classic' | 'ornate' | 'nautical' | 'modern';
   compassPosition: 'tl' | 'tr' | 'bl' | 'br';
+  compassSize?: number;
+  compassOpacity?: number;
+  compassMargin?: number;
   neighborhoodLabels: boolean;
   grid: {
     enabled: boolean;
@@ -63,10 +66,11 @@ export interface CartographyConfig {
 }
 
 export interface FrameConfig {
-  style: 'none' | 'thin' | 'double' | 'ornate';
+  style: 'none' | 'thin' | 'double' | 'ornate' | 'oak' | 'walnut' | 'aluminum' | 'gold' | 'black-gallery' | 'mahogany';
   color: string;
   thickness: number;
-  texture: 'none' | 'parchment' | 'linen' | 'aged' | 'kraft' | 'noise';
+  texture: 'none' | 'parchment' | 'linen' | 'aged' | 'kraft' | 'noise' | 'crumpled';
+  textureOpacity: number; // 0 to 100
   shadow: boolean;
 }
 
@@ -79,6 +83,8 @@ export interface TypographyConfig {
   color: string;
   position: 'top' | 'bottom' | 'overlay';
   alignment: 'left' | 'center' | 'right';
+  offsetX: number;
+  offsetY: number;
 }
 
 export interface PosterConfig {
@@ -146,4 +152,5 @@ export interface MapConfig {
   isLocked: boolean;
   terrain3d: boolean;
   watermark: boolean;
+  uploadedMarkers: { id: string; url: string; name: string }[];
 }

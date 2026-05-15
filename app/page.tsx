@@ -3,6 +3,7 @@ import { SidePanel } from "@/components/editor/SidePanel";
 import { MapCanvas } from "@/components/editor/MapCanvas";
 import { MapFrame } from "@/components/editor/MapFrame";
 import { OnboardingOverlay } from "@/components/editor/OnboardingOverlay";
+import { HydrationGuard } from "@/components/editor/HydrationGuard";
 
 import { ExportModal } from "@/components/editor/ExportModal";
 import { MobileNav } from "@/components/editor/MobileNav";
@@ -10,20 +11,22 @@ import { MobilePanel } from "@/components/editor/MobilePanel";
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <TopBar />
-      <main className="flex flex-1 overflow-hidden">
-        <SidePanel />
-        <div className="flex-1 relative bg-bg-base overflow-hidden">
-          <MapFrame>
-            <MapCanvas />
-          </MapFrame>
-        </div>
-      </main>
-      <ExportModal />
-      <OnboardingOverlay />
-      <MobilePanel />
-      <MobileNav />
-    </div>
+    <HydrationGuard>
+      <div className="flex flex-col h-screen overflow-hidden">
+        <TopBar />
+        <main className="flex flex-1 overflow-hidden">
+          <SidePanel />
+          <div className="flex-1 relative bg-bg-base overflow-hidden">
+            <MapFrame>
+              <MapCanvas />
+            </MapFrame>
+          </div>
+        </main>
+        <ExportModal />
+        <OnboardingOverlay />
+        <MobilePanel />
+        <MobileNav />
+      </div>
+    </HydrationGuard>
   );
 }

@@ -20,6 +20,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 import { LAYOUT_RATIOS } from "@/lib/map/layout";
+import { TEXTURES } from "@/lib/map/textures";
 
 export const MapCanvas = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -31,57 +32,58 @@ export const MapCanvas = () => {
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
-    const initMap = () => {
-      if (map.current || !mapContainer.current) return;
-      map.current = new maplibregl.Map({
-        container: mapContainer.current,
-        style: BASEMAPS[config.basemap].url,
-        center: [config.location.lng, config.location.lat],
-        zoom: config.location.zoom,
-        attributionControl: false,
-        // @ts-ignore
-        preserveDrawingBuffer: true,
-        // Ensure tiles are requested with CORS
-        transformRequest: (url) => {
-          if (url.includes('arcgisonline.com') || url.includes('amazonaws.com')) {
-            return { url, crossOrigin: 'anonymous' };
+    // Small timeout to ensure container has dimensions in all browsers
+    const timer = setTimeout(() => {
+      if (!mapContainer.current) return;
+      
+      const validBasemap = BASEMAPS[config.basemap] ? config.basemap : 'vector';
+
+      const initMap = () => {
+        if (map.current || !mapContainer.current) return;
+        map.current = new maplibregl.Map({
+          container: mapContainer.current,
+          style: BASEMAPS[validBasemap].url,
+          center: [config.location.lng, config.location.lat],
+          zoom: config.location.zoom,
+          attributionControl: false,
+          // @ts-ignore
+          preserveDrawingBuffer: true,
+          transformRequest: (url) => {
+            if (url.includes('arcgisonline.com') || url.includes('amazonaws.com')) {
+              return { url, crossOrigin: 'anonymous' };
+            }
+            return { url };
           }
-          return { url };
-        }
-      });
+        });
 
-      // @ts-ignore
-      window.__terrainly_map = map.current;
+        // @ts-ignore
+        window.__terrainly_map = map.current;
 
-      // Handle initial lock state
-      if (config.isLocked) {
-        map.current.dragPan.disable();
-        map.current.scrollZoom.disable();
-        map.current.boxZoom.disable();
-        map.current.dragRotate.disable();
-        map.current.keyboard.disable();
-        map.current.doubleClickZoom.disable();
-        map.current.touchZoomRotate.disable();
-      }
+        map.current.on("moveend", () => {
+          if (!map.current) return;
+          const { lng, lat } = map.current.getCenter();
+          const zoom = map.current.getZoom();
+          const pitch = map.current.getPitch();
+          const bearing = map.current.getBearing();
+          updateLocation(lat, lng, zoom, pitch, bearing);
+        });
 
-      map.current.on("moveend", () => {
-        if (!map.current) return;
-        const { lng, lat } = map.current.getCenter();
-        const zoom = map.current.getZoom();
-        const pitch = map.current.getPitch();
-        const bearing = map.current.getBearing();
-        updateLocation(lat, lng, zoom, pitch, bearing);
-      });
+        map.current.on("style.load", () => {
+          if (!map.current) return;
+          applyLayerStyling(map.current, config);
+          updateRoutes(map.current, config);
+          updateOverlays(map.current, config, markers);
+        });
+      };
 
-      map.current.on("style.load", () => {
-        if (!map.current) return;
-        applyLayerStyling(map.current, config);
-        updateRoutes(map.current, config);
-      });
+      initMap();
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      map.current?.remove();
+      map.current = null;
     };
-
-    initMap();
-    return () => map.current?.remove();
   }, []);
 
   useEffect(() => {
@@ -90,7 +92,29 @@ export const MapCanvas = () => {
       updateOverlays(map.current, config, markers);
       updateRoutes(map.current, config);
     }
-  }, [config.layers, config.basemap, config.cartography.grid, config.overlays, config.routes, config.themeColors]);
+  }, [config.layers, config.cartography.grid, config.overlays, config.routes, config.themeColors]);
+
+  // Handle Basemap Swapping
+  useEffect(() => {
+    if (!map.current) return;
+    const validBasemap = BASEMAPS[config.basemap] ? config.basemap : 'vector';
+    const styleUrl = BASEMAPS[validBasemap].url;
+    
+    // Only update if the URL has actually changed to avoid unnecessary reloads
+    if (map.current.getStyle()?.sources?.['openmaptiles'] && map.current.getStyle()?.name === BASEMAPS[validBasemap].name) return;
+    
+    map.current.setStyle(styleUrl);
+    
+    // Once the new style loads, we must re-apply all our custom styling
+    map.current.once('style.load', () => {
+      if (map.current) {
+        applyLayerStyling(map.current, config);
+        applyTerrainStyling(map.current, config);
+        updateOverlays(map.current, config, markers);
+        updateRoutes(map.current, config);
+      }
+    });
+  }, [config.basemap]);
 
   // Theme Sync Effect
   useEffect(() => {
@@ -122,7 +146,7 @@ export const MapCanvas = () => {
     } else {
       m.once('style.load', () => applyTerrainStyling(m, config));
     }
-  }, [config.terrain3d, config.themeColors]);
+  }, [config.terrain3d]);
 
   // Sync Map State with Config (e.g. from Geocoder or Store)
   useEffect(() => {
@@ -159,14 +183,14 @@ export const MapCanvas = () => {
 
   const posClass = config.text.position === "top" ? "top-0 bottom-auto" : "bottom-0 top-auto";
 
-  // Proportional units for the Studio Canvas (Sync with Export Engine)
-  // We use cqmin (Container Query Min) to ensure the compass scales relative 
-  // to the smaller dimension of the artwork master, matching our Export Engine math.
-  const compassOffset = `${LAYOUT_RATIOS.COMPASS_OFFSET_RATIO * 100}cqmin`; 
-  const compassSize = `${LAYOUT_RATIOS.COMPASS_SIZE_RATIO * 100}cqmin`;
+  const frameThickness = config.frame.style !== 'none' ? config.frame.thickness * 4 : 0;
   
-  const textPaddingX = `${LAYOUT_RATIOS.PADDING_X * 100}%`;
-  const textPaddingY = `${LAYOUT_RATIOS.PADDING_Y * 100}%`;
+  // Proportional units for the Studio Canvas (Sync with Export Engine)
+  const compassOffset = `calc(${frameThickness}px + ${config.cartography.compassMargin ?? 20}px)`;
+  const compassSize = `${(config.cartography.compassSize || 64) * 0.15}cqmin`; 
+  
+  const textPaddingX = `calc(${LAYOUT_RATIOS.PADDING_X * 100}% + ${frameThickness}px)`;
+  const textPaddingY = `calc(${LAYOUT_RATIOS.PADDING_Y * 100}% + ${frameThickness}px + ${config.text.offsetY}px)`;
 
   const overlayColor = config.themeColors.overlay || "#000000";
 
@@ -178,15 +202,178 @@ export const MapCanvas = () => {
         id="map-artwork-master"
         className="relative w-full h-full shadow-2xl overflow-hidden"
         style={{ 
-          backgroundColor: config.poster.bgColor || "#070b12",
-          containerType: 'size' 
+          backgroundColor: config.poster.bgColor || "#070b12"
         }}
       >
+        {/* The Map itself (Base Layer) */}
+        <div ref={mapContainer} className="absolute inset-0 w-full h-full" />
+
+        {/* Texture Overlay Layer (On top of map, behind frame/text) */}
+        {config.frame.texture !== 'none' && (
+          <div 
+            className="absolute inset-0 z-[40] pointer-events-none mix-blend-overlay transition-all duration-500"
+            style={{ opacity: (config.frame.textureOpacity ?? 40) / 100 }}
+          >
+            {config.frame.texture === 'crumpled' && (
+              <div 
+                className="absolute inset-0" 
+                style={{ 
+                  backgroundImage: `url(${TEXTURES.crumpled})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }} 
+              />
+            )}
+            {config.frame.texture === 'parchment' && (
+              <div className="absolute inset-0 bg-[#f4e4bc] opacity-80" style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/papyros.png")` }} />
+            )}
+            {config.frame.texture === 'linen' && (
+              <div className="absolute inset-0 bg-[#faf9f6]" style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/linen-design.png")` }} />
+            )}
+            {config.frame.texture === 'aged' && (
+              <div className="absolute inset-0 bg-[#dcb35c] opacity-40" style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/stucco-tiles.png")` }} />
+            )}
+            {config.frame.texture === 'noise' && (
+              <div className="absolute inset-0 bg-white/5 opacity-10" style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/asfalt-light.png")` }} />
+            )}
+            {config.frame.texture === 'kraft' && (
+              <div className="absolute inset-0 bg-[#a68064]" style={{ backgroundImage: `url("https://www.transparenttextures.com/patterns/cardboard.png")` }} />
+            )}
+          </div>
+        )}
+
+        {/* Frame Overlay Layer (High Z-Index, on top of map but below text if needed) */}
+        {config.frame.style !== 'none' && (
+          <div className="absolute inset-0 pointer-events-none z-[45]">
+            {/* 1. Real Material Frames (4-Bar Layout) */}
+            {['oak', 'walnut', 'mahogany', 'aluminum', 'gold', 'black-gallery'].includes(config.frame.style) && (() => {
+              const thickness = config.frame.thickness * 4;
+              const style = config.frame.style;
+              
+              const getFrameStyle = (isVertical: boolean): React.CSSProperties => {
+                const baseStyles: React.CSSProperties = {
+                  position: 'absolute',
+                  pointerEvents: 'none',
+                  ...(style === 'oak' && {
+                    background: isVertical 
+                      ? `repeating-linear-gradient(0deg, #8b5a2b, #8b5a2b 2px, #a0522d 2px, #a0522d 4px)`
+                      : `repeating-linear-gradient(90deg, #8b5a2b, #8b5a2b 2px, #a0522d 2px, #a0522d 4px)`,
+                    backgroundColor: '#5d3a1a',
+                    boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)'
+                  }),
+                  ...(style === 'walnut' && {
+                    background: isVertical
+                      ? `repeating-linear-gradient(0deg, #3d2b1f, #3d2b1f 1px, #4d3b2f 1px, #4d3b2f 3px)`
+                      : `repeating-linear-gradient(90deg, #3d2b1f, #3d2b1f 1px, #4d3b2f 1px, #4d3b2f 3px)`,
+                    backgroundColor: '#2d1b0f',
+                    boxShadow: 'inset 0 0 15px rgba(0,0,0,0.6)'
+                  }),
+                  ...(style === 'mahogany' && {
+                    background: isVertical
+                      ? `repeating-linear-gradient(0deg, #800000, #800000 2px, #4d0000 2px, #4d0000 4px)`
+                      : `repeating-linear-gradient(90deg, #800000, #800000 2px, #4d0000 2px, #4d0000 4px)`,
+                    backgroundColor: '#600000',
+                    boxShadow: 'inset 0 0 12px rgba(0,0,0,0.5)'
+                  }),
+                  ...(style === 'aluminum' && {
+                    background: isVertical
+                      ? `linear-gradient(to bottom, #999, #eee 10%, #999 20%, #eee 30%, #999 40%, #eee 50%, #999 60%, #eee 70%, #999 80%, #eee 90%, #999)`
+                      : `linear-gradient(to right, #999, #eee 10%, #999 20%, #eee 30%, #999 40%, #eee 50%, #999 60%, #eee 70%, #999 80%, #eee 90%, #999)`,
+                    boxShadow: 'inset 0 0 10px rgba(255,255,255,0.3)'
+                  }),
+                  ...(style === 'gold' && {
+                    background: isVertical
+                      ? `linear-gradient(to bottom, #d4af37, #f9f295 50%, #b8860b)`
+                      : `linear-gradient(to right, #d4af37, #f9f295 50%, #b8860b)`,
+                    boxShadow: 'inset 0 0 15px rgba(0,0,0,0.2)'
+                  }),
+                  ...(style === 'black-gallery' && {
+                    backgroundColor: '#0a0a0a',
+                    boxShadow: 'inset 0 0 10px rgba(255,255,255,0.05)'
+                  }),
+                };
+                return baseStyles;
+              };
+
+              return (
+                <>
+                  <div style={{ ...getFrameStyle(false), top: 0, left: 0, right: 0, height: thickness }} />
+                  <div style={{ ...getFrameStyle(false), bottom: 0, left: 0, right: 0, height: thickness }} />
+                  <div style={{ ...getFrameStyle(true), top: thickness, bottom: thickness, left: 0, width: thickness }} />
+                  <div style={{ ...getFrameStyle(true), top: thickness, bottom: thickness, right: 0, width: thickness }} />
+                </>
+              );
+            })()}
+
+            {/* 2. Line-Based Frames (Cartography Grade) */}
+            {['thin', 'double', 'ornate'].includes(config.frame.style) && (() => {
+              const thickness = config.frame.thickness;
+              const color = config.frame.color || config.themeColors.text || '#fff';
+              const gap = thickness * 2;
+              
+              return (
+                <div 
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ padding: `${thickness * 4}px` }}
+                >
+                  <div className="w-full h-full relative">
+                    {/* Style 1: Thin Line (Single clean stroke) */}
+                    {config.frame.style === 'thin' && (
+                      <div className="absolute inset-0 border" style={{ borderColor: color, borderWidth: `${thickness}px` }} />
+                    )}
+
+                    {/* Style 2: Double Line (Thick outer, thin inner) */}
+                    {config.frame.style === 'double' && (
+                      <>
+                        <div className="absolute inset-0 border" style={{ borderColor: color, borderWidth: `${thickness * 1.5}px` }} />
+                        <div className="absolute border" style={{ 
+                          top: `-${gap}px`, left: `-${gap}px`, right: `-${gap}px`, bottom: `-${gap}px`,
+                          borderColor: color, borderWidth: `1px`, opacity: 0.8 
+                        }} />
+                      </>
+                    )}
+
+                    {/* Style 3: Vintage Ornate (Triple line + Corner Accents) */}
+                    {config.frame.style === 'ornate' && (
+                      <>
+                        {/* Triple boundary */}
+                        <div className="absolute inset-0 border" style={{ borderColor: color, borderWidth: `${thickness}px` }} />
+                        <div className="absolute border" style={{ 
+                          top: `-${gap}px`, left: `-${gap}px`, right: `-${gap}px`, bottom: `-${gap}px`,
+                          borderColor: color, borderWidth: `1px`, opacity: 0.6 
+                        }} />
+                        <div className="absolute border" style={{ 
+                          top: `${gap}px`, left: `${gap}px`, right: `${gap}px`, bottom: `${gap}px`,
+                          borderColor: color, borderWidth: `1px`, opacity: 0.6 
+                        }} />
+                        
+                        {/* Corner "L" Accents (The Ornate part) */}
+                        <div className="absolute -top-3 -left-3 w-6 h-6 border-t-2 border-l-2" style={{ borderColor: color }} />
+                        <div className="absolute -top-3 -right-3 w-6 h-6 border-t-2 border-r-2" style={{ borderColor: color }} />
+                        <div className="absolute -bottom-3 -left-3 w-6 h-6 border-b-2 border-l-2" style={{ borderColor: color }} />
+                        <div className="absolute -bottom-3 -right-3 w-6 h-6 border-b-2 border-r-2" style={{ borderColor: color }} />
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Optional Inner Shadow for Depth */}
+            {config.frame.shadow && (
+              <div 
+                className="absolute z-10 pointer-events-none" 
+                style={{ 
+                  top: config.frame.thickness * 4, left: config.frame.thickness * 4, right: config.frame.thickness * 4, bottom: config.frame.thickness * 4,
+                  boxShadow: 'inset 0 0 40px rgba(0,0,0,0.7), inset 0 0 10px rgba(0,0,0,0.9)'
+                }} 
+              />
+            )}
+          </div>
+        )}
         {/* Background/Aura effects */}
         <AuraBackground />
 
-        {/* The Map itself (Grid is now inside here) */}
-        <div ref={mapContainer} className="absolute inset-0 w-full h-full z-10" />
 
         {/* Gradient overlays */}
         {config.showOverlayLayer && (
@@ -247,6 +434,7 @@ export const MapCanvas = () => {
             style={{
               width: compassSize,
               height: compassSize,
+              opacity: config.cartography.compassOpacity ?? 0.8,
               [config.cartography.compassPosition?.startsWith('b') ? 'bottom' : 'top']: compassOffset,
               [config.cartography.compassPosition?.endsWith('r') ? 'right' : 'left']: compassOffset,
             }}
@@ -272,6 +460,7 @@ export const MapCanvas = () => {
               paddingLeft: textPaddingX, 
               paddingRight: textPaddingX, 
               [config.text.position === 'top' ? 'top' : 'bottom']: textPaddingY,
+              transform: `translateX(${config.text.offsetX}px)`,
             }}
           >
             <div className="flex flex-col">

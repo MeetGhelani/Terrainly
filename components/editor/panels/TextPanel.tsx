@@ -163,6 +163,62 @@ export const TextPanel = () => {
         </div>
       </div>
 
+      {/* Positioning Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Move className="w-4 h-4 text-accent" />
+          <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest">
+            Custom Positioning
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider">
+                Horizontal Offset (X)
+              </label>
+              <span className="text-[10px] font-mono text-text-muted">
+                {config.text.offsetX}px
+              </span>
+            </div>
+            <input
+              type="range"
+              min="-100"
+              max="100"
+              step="1"
+              value={config.text.offsetX}
+              onChange={(e) => updateText({ offsetX: parseInt(e.target.value) })}
+              className="w-full h-1.5 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider">
+                Vertical Offset (Y)
+              </label>
+              <span className="text-[10px] font-mono text-text-muted">
+                {config.text.offsetY}px
+              </span>
+            </div>
+            <input
+              type="range"
+              min="-200"
+              max="200"
+              step="1"
+              value={config.text.offsetY}
+              onChange={(e) => updateText({ offsetY: parseInt(e.target.value) })}
+              className="w-full h-1.5 bg-bg-elevated rounded-lg appearance-none cursor-pointer accent-accent"
+            />
+          </div>
+          
+          <p className="text-[10px] text-text-muted italic bg-bg-surface/50 p-2 rounded-lg leading-relaxed">
+            Note: Text already automatically clears your border thickness. Use these sliders for fine-tuning.
+          </p>
+        </div>
+      </div>
+
       {/* Poster Layout */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">

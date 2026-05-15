@@ -9,6 +9,7 @@ import {
   Layers, 
   Type, 
   Square, 
+  Layout,
   Compass, 
   Pin, 
   Download, 
@@ -33,7 +34,8 @@ function cn(...inputs: ClassValue[]) {
 
 const TABS = [
   { id: "basemap", icon: Palette, label: "Theme" },
-  { id: "layout", icon: Square, label: "Layout" },
+  { id: "layout", icon: Layout, label: "Layout" },
+  { id: "frame", icon: Square, label: "Frame" },
   { id: "style", icon: Type, label: "Style" },
   { id: "layers", icon: Layers, label: "Layers" },
   { id: "overlays", icon: Pin, label: "Markers" },

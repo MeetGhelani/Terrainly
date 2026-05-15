@@ -77,13 +77,6 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
   const { config } = useMapStore();
   const ratio = getRatio(config.poster);
 
-  // Frame border style
-  const frameBorderClass = {
-    none: "",
-    thin: "ring-1 ring-white/10",
-    double: "ring-4 ring-double ring-white/10",
-    ornate: "ring-2 ring-accent/30",
-  }[config.frame.style] ?? "";
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -133,10 +126,7 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
 
       {/* ── Poster frame ── */}
       <div
-        className={cn(
-          "relative z-10 overflow-hidden shadow-[0_8px_80px_rgba(0,0,0,0.7)] transition-all duration-700 ease-out",
-          frameBorderClass,
-        )}
+        className="relative z-10 overflow-hidden shadow-[0_8px_80px_rgba(0,0,0,0.7)] transition-all duration-700 ease-out"
         style={{
           aspectRatio: ratio,
           // Responsive constraints: 
@@ -148,16 +138,6 @@ export const MapFrame = ({ children }: { children: React.ReactNode }) => {
       >
         {/* Map fills the poster */}
         <div className="absolute inset-0">{children}</div>
-
-        {/* Poster border overlay (decorative) */}
-        {config.frame.style !== "none" && (
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              boxShadow: `inset 0 0 0 ${config.frame.thickness * 4}px ${config.frame.color}22`,
-            }}
-          />
-        )}
       </div>
 
       {/* ── Format badge ── */}

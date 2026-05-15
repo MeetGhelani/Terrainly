@@ -27,6 +27,9 @@ export const DEFAULT_MAP_CONFIG: MapConfig = {
     compass: false,
     compassStyle: "minimal",
     compassPosition: "br",
+    compassSize: 64,
+    compassOpacity: 0.8,
+    compassMargin: 20,
     neighborhoodLabels: true,
     grid: {
       enabled: false,
@@ -40,9 +43,10 @@ export const DEFAULT_MAP_CONFIG: MapConfig = {
   },
   frame: {
     style: "thin",
-    color: "#1e2d45",
-    thickness: 2,
+    color: "", // Empty means follow theme
+    thickness: 3,
     texture: "none",
+    textureOpacity: 40,
     shadow: false,
   },
   text: {
@@ -54,6 +58,8 @@ export const DEFAULT_MAP_CONFIG: MapConfig = {
     color: "",
     position: "bottom",
     alignment: "center",
+    offsetX: 0,
+    offsetY: 0,
   },
   poster: {
     ratio: "A3",
@@ -75,4 +81,5 @@ export const DEFAULT_MAP_CONFIG: MapConfig = {
   isLocked: false,
   terrain3d: false,
   watermark: true,
+  uploadedMarkers: [],
 };
